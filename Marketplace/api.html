@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>AI Racing API</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300|Source+Code+Pro:300" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/hlua/highlight.css">
+  <script src="hlua/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+<body>
+  <header>
+    <h1>AI Racing API</h1>
+    <nav>
+      <ul>
+        <li><a class="jbutton" href="#language">Language</a></li>
+        <li><a class="jbutton" href="#credit">Credit</a></li>
+        <li><a class="jbutton" href="#track">Track</a></li>
+        <li><a class="jbutton" href="#events">Events</a></li>
+        <li><a class="jbutton" href="#actions">Actions</a></li>
+        <li><a class="jbutton" href="#carinfo">Car Info</a></li>
+        <li><a class="jbutton" href="#gameinfo">Game Info</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="language">
+      <h2>Language</h2>
+      <p>Lua is the scripting language used for this thing.</p>
+    </section>
+    <section id="credit">
+      <h2>Credit</h2>
+      <p>If you tweak someone else's script, you should provide the ID of that script.</p>
+      <p><code class="function">parentScript()</code>This should return the ID of the script you tweaked.</p>
+      <span class="precaption">Example:</span>
+      <pre class="examplecode"><code>
+function parentScript()
+  return 3
+  -- this script is a tweak of the script with ID 3.
+end
+      </code></pre>
+    </section>
+    <section id="track">
+      <h2>Track</h2>
+      <p>A track is represented as a sequence of nodes.</p>
+    </section>
+    <section id="events">
+      <h2>Events</h2>
+      <p>Implement these functions to allow the program to drive the car around the track.</p>
+      <p><code class="function">start()</code>This is called only once when the race starts.</p>
+      <p><code class="function">update()</code>This is called once every tick of the race.</p>
+      <p><code class="function">newSection()</code>This is called when the car enters a new section of the track.</p>
+    </section>
+    <section id="actions">
+      <h2>Actions</h2>
+      <p>Use the<code class="function inlinefunction">car</code>object to manipulate the car.</p>
+      <p><code class="function">car:accelerate()</code>The X coordinate of the car's position.</p>
+      <p><code class="function">car:decelerate()</code>The Z coordinate of the car's position.</p>
+      <p><code class="function">car:turnLeft()</code>The X coordinate of the car's position.</p>
+      <p><code class="function">car:turnRight()</code>The Z coordinate of the car's position.</p>
+      <span class="precaption">Example:</span>
+      <pre class="examplecode"><code>
+function update()
+  car:accelerate()
+  -- accelerate every tick
+end
+      </code></pre>
+    </section>
+    <section id="carinfo">
+      <h2>Car Info</h2>
+      <p>Use the<code class="function inlinefunction">car</code>object to get information about the car.</p>
+      <p><code class="function">car.position.x</code>The X coordinate of the car's position.</p>
+      <p><code class="function">car.position.z</code>The Z coordinate of the car's position.</p>
+      <p><code class="function">car.speed</code>The speed of the car.</p>
+    </section>
+    <section id="gameinfo">
+      <h2>Track Info</h2>
+      <p>Use the<code class="function inlinefunction">track</code>object to get information about the track.</p>
+      <p><code class="function">track.lastNode</code>The last node the car passed through</p>
+      <p><code class="function">track.nextNode</code>The next node the car must pass through.</p>
+      <p><code class="function">track.nodeAfter</code>The node the car must pass through after passing <code class="function inlinefunction">track.nextNode</code>.</p>
+    </section>
+  </main>
+</body>
+
+</html>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

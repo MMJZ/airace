@@ -1,0 +1,101 @@
+/*
+
+Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
+
+*/
+
+.hljs {
+/*  display: block;*/
+/*  overflow-x: auto;*/
+  padding: 0.5em;
+/*  background: #F0F0F0;*/
+  font-family: 'Source Code Pro', monospace;
+/*  background-color: rgba(0,0,0,0.6);*/
+}
+
+
+/* Base color: saturation 0; */
+
+.hljs,
+.hljs-subst {
+  color: rgb(255,170,150);
+}
+
+.hljs-comment {
+  color: rgb(150,150,220);
+}
+
+.hljs-keyword,
+.hljs-attribute,
+.hljs-selector-tag,
+.hljs-meta-keyword,
+.hljs-doctag,
+.hljs-name {
+/*  font-weight: bold;*/
+}
+
+
+/* User color: hue: 0 */
+
+.hljs-type,
+.hljs-string,
+.hljs-number,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion {
+  color: rgb(200,255,255);
+}
+
+.hljs-title,
+.hljs-section {
+  color: #88ff00;
+/*  font-weight: bold;*/
+}
+
+.hljs-regexp,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: white;
+}
+
+
+/* Language color: hue: 90; */
+
+.hljs-literal {
+  color: white;
+}
+
+.hljs-built_in,
+.hljs-bullet,
+.hljs-code,
+.hljs-addition {
+  color: white;
+}
+
+
+/* Meta color: hue: 200 */
+
+.hljs-meta {
+  color: white;
+}
+
+.hljs-meta-string {
+  color: white;
+}
+
+
+/* Misc effects */
+
+.hljs-emphasis {
+/*  font-style: italic;*/
+}
+
+.hljs-strong {
+/*  font-weight: bold;*/
+}
