@@ -4,7 +4,6 @@ using UnityEngineInternal;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using System.Security.Cryptography;
-using System.IO.Pipes;
 
 public class Leaderboard {
 
@@ -78,17 +77,17 @@ class TreeNode {
     children = new TreeNode[0];
   }
 
-  public bool addChild(string script, int parentID, string nickname, int time, int newID) {
+  public bool addChild(string script, int parentID, string nickname, RaceStats stats, int newID) {
     if(ID == parentID) {
       TreeNode[] newarr = new TreeNode[children.Length + 1];
       for (int x = 0; x < children.Length; x++)
         newarr [x] = children [x];
-      newarr [children.Length] = new TreeNode (script, nickname, time, newID);
+      newarr [children.Length] = new TreeNode (script, nickname, stats, newID);
       children = newarr;
       return true;
     } else
       foreach (TreeNode c in children)
-        if(c.addChild (script, parentID, nickname, time, newID))
+        if(c.addChild (script, parentID, nickname, stats, newID))
           return true;
     return false;
   }
