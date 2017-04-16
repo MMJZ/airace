@@ -3,10 +3,10 @@
 
 public class GameState {
 
-	public readonly double turnAngle, tiltAngle, maxSafeTurningAngle, px, pz, vx, vz;
-	public readonly Node lastNode, nextNode, nodeAfter;
-	public readonly bool deadCar, finishedCar, enteredNewSegment;
-	public readonly int timer;
+	public double turnAngle, tiltAngle, maxSafeTurningAngle, px, pz, vx, vz;
+	public Node lastNode, nextNode, nodeAfter;
+	public bool deadCar, finishedCar, enteredNewSegment;
+	public int timer;
 
 	public GameState(Node lastNode, Node nextNode, Node nodeAfter, int timer) {
 		this.turnAngle = 0.0;
