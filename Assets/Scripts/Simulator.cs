@@ -1,38 +1,31 @@
 ﻿using NLua;
+using UnityEngine;
 
 public class Simulator {
 
   private CarAPI carapi;
-  private TrackAPI trackapi;
   private Lua luaenv;
   private string script;
 
-  public Simulator() {
-    carapi = new CarAPI ();
-    trackapi = new TrackAPI ();
+  public Simulator(string script) {
     luaenv = new Lua ();
     luaenv.LoadCLRPackage ();
-    luaenv ["car"] = carapi;
-    luaenv ["track"] = trackapi;
-  }
-
-  public void loadScript(string script) {
     luaenv.DoString (script);
   }
 
   public void start(GameState state) {
-    carapi.Update (state);
-    trackapi.Update (state);
+    carapi = new CarAPI (state);
+    luaenv ["car"] = carapi;
     CallScript ("Start");
   }
 
   public CarAction update(GameState state) {
-    carapi.Update (state);
-    trackapi.Update (state);
     CallScript ("Update");
     CarAction action = carapi.getActionAndReset ();
-    if(state.enteredNewSegment)
+    if(state.enteredNewSegment) {
       CallScript ("NewSection");
+      state.enteredNewSegment = false;
+    }
     return action;
   }
 
