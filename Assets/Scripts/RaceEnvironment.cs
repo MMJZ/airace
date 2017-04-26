@@ -25,6 +25,18 @@ namespace UnityStandardAssets.Vehicles.Car {
       new Track (new Node (0, 0, 0, 9), new Node (0, 200, 0, 9), new Node (10, 210, 315, 9), new Node (20, 220, 0, 9), new Node (10, 230, 45, 9), new Node (0, 240, 0, 9), new Node (10, 250, 315, 9), new Node (20, 260, 0, 10), new Node (10, 270, 45, 9), new Node (0, 280, 0, 10), new Node (10, 290, 315, 9), new Node (20, 300, 270, 9), new Node (450, 300, 270, 9), new Node (460, 290, 225, 8), new Node (470, 280, 270, 9), new Node (690, 280, 270, 9), new Node (700, 270, 225, 9), new Node (705, 260, 180, 11), new Node (700, 250, 135, 9), new Node (690, 240, 90, 9), new Node (50, 240, 90, 9), new Node (45, 230, 135, 8), new Node (40, 220, 180, 9), new Node (45, 210, 225, 8), new Node (50, 200, 180, 9), new Node (45, 190, 135, 8), new Node (40, 180, 180, 9), new Node (45, 170, 225, 8), new Node (50, 160, 270, 9), new Node (350, 160, 270, 9), new Node (355, 165, 315, 8), new Node (360, 170, 0, 9), new Node (365, 175, 315, 9), new Node (370, 180, 270, 10), new Node (375, 175, 225, 9), new Node (380, 170, 270, 9), new Node (990, 170, 270, 9), new Node (995, 165, 225, 9), new Node (1000, 160, 180, 10), new Node (1000, 140, 180, 10), new Node (995, 135, 135, 9), new Node (990, 130, 90, 9), new Node (30, 130, 90, 9), new Node (25, 125, 135, 9), new Node (20, 120, 180, 10), new Node (25, 115, 225, 9), new Node (30, 110, 270, 9), new Node (990, 110, 270, 9), new Node (995, 105, 225, 8), new Node (1000, 100, 180, 9), new Node (1000, -150, 180, 9), new Node (995, -155, 135, 9), new Node (990, -160, 90, 9), new Node (500, -160, 90, 9), new Node (495, -165, 135, 9), new Node (490, -170, 180, 10), new Node (495, -175, 225, 9), new Node (500, -180, 180, 10), new Node (495, -185, 135, 9), new Node (490, -190, 90, 9), new Node (60, -190, 90, 9), new Node (55, -185, 45, 9), new Node (50, -180, 0, 10), new Node (45, -175, 45, 9), new Node (40, -170, 90, 10), new Node (35, -165, 45, 9), new Node (30, -160, 0, 10), new Node (25, -155, 45, 9), new Node (20, -150, 90, 10), new Node (15, -145, 45, 9), new Node (10, -140, 0, 10), new Node (5, -135, 45, 9), new Node (0, -130, 0, 9))
     };
 
+    // The track walls, used to get the distance from the car to each object comprising the track walls
+    private struct WallObject{
+      public GameObject obj;
+      //TODO: Convert this to int array, distance to each car
+      public float dist;
+      public void setDist(float x){
+        dist = x;
+      }
+    }
+    private static List<WallObject> leftWalls = new List<WallObject>();
+    private static List<WallObject> rightWalls = new List<WallObject>();
+
     // Racers
     private class Racer {
       
@@ -50,8 +62,35 @@ namespace UnityStandardAssets.Vehicles.Car {
         }
       }
 
+      public void start(){
+        // Initialize object distances
+        foreach (WallObject c in leftWalls) {
+          c.setDist(Vector3.Distance (c.obj.transform.position, car.transform.position));
+        }
+        foreach (WallObject c in rightWalls) {
+          c.setDist(Vector3.Distance (c.obj.transform.position, car.transform.position));
+        }
+
+      }
+
+
       public void update() {
+        float leftdist = 1000;
+        float rightdist = 1000;
+        WallObject leftmin = new WallObject ();
+        // Update distances every frame by iterating over all wall objects and updating the distance. 
+        foreach (WallObject w in leftWalls) {
+          float newdist = Vector3.Distance (w.obj.transform.position, car.transform.position);
+          leftdist = Math.Min (leftdist, newdist);          
+          w.setDist (newdist);    
+        }
+        foreach (WallObject w in rightWalls) {
+          float newdist = Vector3.Distance (w.obj.transform.position, car.transform.position);
+          rightdist = Math.Min (rightdist, newdist); 
+          w.setDist (newdist);
+        }
         try {
+          state.setDistances (leftdist,rightdist);
           CarAction action = simulator.update (state);
           controller.Move (controller.CurrentSteerAngle / 15 + action.turn * 0.05f, action.accel, 0, 0);
           state.setTurnAngle (controller.CurrentSteerAngle);
@@ -119,41 +158,49 @@ namespace UnityStandardAssets.Vehicles.Car {
           GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
           cube.GetComponent<Renderer> ().material.color = red;
           cube.transform.position = new Vector3 (j, 0, (left.z + ((j - left.x) * ldiff)));
+          cube.tag = "leftside";
         }
         for (float j = left1.x; j <= left.x; j += 1) {
           GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
           cube.GetComponent<Renderer> ().material.color = red;
           cube.transform.position = new Vector3 (j, 0, (left1.z + ((j - left1.x) * ldiff)));
+          cube.tag = "leftside";
         }
         for (float j = left.z; j <= left1.z; j += 1) {
           GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
           cube.GetComponent<Renderer> ().material.color = red;
           cube.transform.position = new Vector3 ((left.x + ((j - left.z) * ldiffrev)), 0, (float)j);
+          cube.tag = "leftside";
         }
         for (float j = left1.z; j <= left.z; j += 1) {
           GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
           cube.GetComponent<Renderer> ().material.color = red;
           cube.transform.position = new Vector3 ((left1.x + ((j - left1.z) * ldiffrev)), 0, (float)j);
+          cube.tag = "leftside";
         }
         for (float j = right.x; j <= right1.x; j += 1) {
           GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
           cube.GetComponent<Renderer> ().material.color = red;
           cube.transform.position = new Vector3 (j, 0, (float)(right.z + ((j - right.x) * rdiff)));
+          cube.tag = "rightside";
         }
         for (float j = right1.x; j <= right.x; j += 1) {
           GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
           cube.GetComponent<Renderer> ().material.color = red;
           cube.transform.position = new Vector3 (j, 0, (float)(right1.z + ((j - right1.x) * rdiff)));
+          cube.tag = "rightside";
         }
         for (float j = right.z; j <= right1.z; j += 1) {
           GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
           cube.GetComponent<Renderer> ().material.color = red;
           cube.transform.position = new Vector3 ((right.x + ((j - right.z) * rdiffrev)), 0, (float)j);
+          cube.tag = "rightside";
         }
         for (float j = right1.z; j <= right.z; j += 1) {
           GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
           cube.GetComponent<Renderer> ().material.color = red;
           cube.transform.position = new Vector3 ((right1.x + ((j - right1.z) * rdiffrev)), 0, (float)j);
+          cube.tag = "rightside";
         }
       }
 
@@ -162,6 +209,22 @@ namespace UnityStandardAssets.Vehicles.Car {
       GameState state = new GameState (track.nodes [0], track.nodes [1], track.nodes [2], timer);
       racer = new Racer (car, script, state, track);
       timer = 0;
+
+      foreach ( GameObject w in GameObject.FindGameObjectsWithTag ("leftside")){
+        WallObject c = new WallObject();
+        c.obj = w;
+        c.dist = 0;
+        leftWalls.Add(c);
+      }
+      foreach ( GameObject w in GameObject.FindGameObjectsWithTag ("rightside")){
+        WallObject c = new WallObject();
+        c.obj = w;
+        c.dist = 0;
+        rightWalls.Add(c);
+      }
+      racer.start ();
+
+
     }
 
     void FixedUpdate() {

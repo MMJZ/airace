@@ -8,6 +8,8 @@ public class GameState {
   public Node lastNode, nextNode, nodeAfter;
   public bool deadCar, finishedCar, enteredNewSegment;
   public int timer;
+  public float distanceToLeftSide, distanceToRightSide;
+
 
   public GameState(Node lastNode, Node nextNode, Node nodeAfter, int timer) {
     this.turnAngle = 0;
@@ -23,6 +25,9 @@ public class GameState {
     this.finishedCar = false;
     this.enteredNewSegment = false;
     this.timer = timer;
+    this.distanceToLeftSide = 0;
+    this.distanceToRightSide = 0;
+
   }
 
   public void setTurnAngle(float turnAngle) {
@@ -65,11 +70,10 @@ public class GameState {
     finishedCar = true;
   }
 
-  public float getDistanceToLeftSide() {
-    return Vector3.Distance (position, nextNode.leftSide);
+  public void setDistances(float left, float right){
+    distanceToLeftSide = left;
+    distanceToRightSide = right;
   }
 
-  public float getDistanceToRightSide() {
-    return Vector3.Distance (position, nextNode.rightSide);
-  }
+
 }
