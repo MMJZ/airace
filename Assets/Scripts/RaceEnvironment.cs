@@ -16,8 +16,8 @@ namespace UnityStandardAssets.Vehicles.Car {
 
     // Tracks
     private Track[] tracks = new Track[] {
-      new Track (new Node (7, 0, 0, 5), new Node (100, 0, 0, 9), new Node (300, 20, 0, 37), new Node (500, 100, 330, 27), new Node (650, 200, 0, 20)),
-      new Track (new Node (0, 0, 90, 2), new Node (0, 90, 90, 5)),
+      new Track (new Node (0, 0, 0, 12), new Node (0, 100, 0, 12), new Node (50, 300, 270, 17), new Node (100, -100, 180, 27), new Node (50, -200, 90, 20)),
+      new Track (new Node (0, 0, 90, 25), new Node (0, 90, 315, 23), new Node (200, 300, 230, 32)),
       new Track (new Node (0, 0, 45, 14.142), new Node (0, 120, 315, 14.142), new Node (20, 140, 315, 14.142), new Node (140, 140, 225, 14.142), new Node (160, 120, 225, 14.142), new Node (160, 0, 135, 14.142), new Node (140, -20, 135, 14.142), new Node (20, -20, 45, 14.142)),
       new Track (new Node (0, 0, 0, 9), new Node (5, 50, 315, 8), new Node (15, 57, 305, 9), new Node (25, 60, 295, 10), new Node (80, 60, 205, 10), new Node (90, 57, 215, 9), new Node (100, 50, 225, 8), new Node (105, 30, 200, 9), new Node (130, -20, 180, 10), new Node (120, -35, 120, 9), new Node (55, -35, 110, 9), new Node (35, -45, 90, 8), new Node (15, -35, 45, 9)),
       new Track (new Node (0, 0, 0, 9), new Node (0, 500, 0, 9), new Node (5, 510, 315, 10), new Node (15, 515, 270, 11), new Node (25, 510, 225, 9), new Node (30, 500, 180, 9), new Node (30, 300, 180, 9), new Node (40, 290, 225, 8), new Node (50, 280, 270, 9), new Node (60, 270, 225, 8), new Node (70, 260, 180, 9), new Node (70, 180, 180, 9), new Node (60, 170, 135, 8), new Node (50, 160, 90, 9), new Node (40, 150, 135, 8), new Node (30, 140, 180, 9), new Node (30, 0, 180, 9), new Node (25, -10, 135, 10), new Node (15, -15, 90, 11), new Node (5, -10, 45, 10)),
@@ -52,7 +52,7 @@ namespace UnityStandardAssets.Vehicles.Car {
         this.track = track;
         state = t;
         car.transform.position += new Vector3 ((float)t.lastNode.position.x, 0, (float)t.lastNode.position.z);
-        car.transform.Rotate (0, 90 - (float)t.lastNode.theta, 0);
+        car.transform.Rotate (0, (float)t.lastNode.theta, 0);
         controller = car.GetComponent<CarController> ();
         try {
           simulator = new Simulator (script);
@@ -97,7 +97,8 @@ namespace UnityStandardAssets.Vehicles.Car {
           state.setPosition (car.transform.position);
           state.setVelocity (controller.CurrentVelocity);
           state.setFacingAngle (car.transform.rotation.y * 180 / (float)Math.PI);
-          if(Vector3.Distance (track.nodes [currentNode].position, car.transform.position) < track.nodes [currentNode].width)
+          if (currentNode == track.nodes.Length - 1) state.notifyFinished();
+          if (Vector3.Distance (track.nodes [currentNode].position, car.transform.position) < track.nodes [currentNode].width)
             state.newSegment (track.nodes [(currentNode++ + 2) % track.nodes.Length]);
         } catch (NLua.Exceptions.LuaException e) {
           Debug.Log (e.ToString ());
@@ -120,7 +121,7 @@ namespace UnityStandardAssets.Vehicles.Car {
           end
         end";
       string nickname = "";
-      int trackNum = 0;
+      int trackNum = 5;
       int racetype = 0;
 
 //      if angle > 0 then
@@ -137,7 +138,7 @@ namespace UnityStandardAssets.Vehicles.Car {
 
       // Build objects to represent track
       track = tracks [trackNum];
-      for (int i = 0; i < track.nodes.Length - 1; i += 1) {
+      for (int i = 0; i < track.nodes.Length; i += 1) {
         Vector3 left = track.nodes [i].leftSide;
         Vector3 right = track.nodes [i].rightSide;
         Vector3 left1 = track.nodes [(i + 1) % (track.nodes.Length)].leftSide;
@@ -154,53 +155,56 @@ namespace UnityStandardAssets.Vehicles.Car {
 
         Color red = new Color (1, 0, 0);
 
-        for (float j = left.x; j <= left1.x; j += 1) {
-          GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
-          cube.GetComponent<Renderer> ().material.color = red;
-          cube.transform.position = new Vector3 (j, 0, (left.z + ((j - left.x) * ldiff)));
-          cube.tag = "leftside";
-        }
-        for (float j = left1.x; j <= left.x; j += 1) {
-          GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
-          cube.GetComponent<Renderer> ().material.color = red;
-          cube.transform.position = new Vector3 (j, 0, (left1.z + ((j - left1.x) * ldiff)));
-          cube.tag = "leftside";
-        }
-        for (float j = left.z; j <= left1.z; j += 1) {
-          GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
-          cube.GetComponent<Renderer> ().material.color = red;
-          cube.transform.position = new Vector3 ((left.x + ((j - left.z) * ldiffrev)), 0, (float)j);
-          cube.tag = "leftside";
-        }
-        for (float j = left1.z; j <= left.z; j += 1) {
-          GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
-          cube.GetComponent<Renderer> ().material.color = red;
-          cube.transform.position = new Vector3 ((left1.x + ((j - left1.z) * ldiffrev)), 0, (float)j);
-          cube.tag = "leftside";
-        }
-        for (float j = right.x; j <= right1.x; j += 1) {
-          GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
-          cube.GetComponent<Renderer> ().material.color = red;
-          cube.transform.position = new Vector3 (j, 0, (float)(right.z + ((j - right.x) * rdiff)));
-          cube.tag = "rightside";
-        }
-        for (float j = right1.x; j <= right.x; j += 1) {
-          GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
-          cube.GetComponent<Renderer> ().material.color = red;
-          cube.transform.position = new Vector3 (j, 0, (float)(right1.z + ((j - right1.x) * rdiff)));
-          cube.tag = "rightside";
-        }
-        for (float j = right.z; j <= right1.z; j += 1) {
-          GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
-          cube.GetComponent<Renderer> ().material.color = red;
-          cube.transform.position = new Vector3 ((right.x + ((j - right.z) * rdiffrev)), 0, (float)j);
-          cube.tag = "rightside";
-        }
-        for (float j = right1.z; j <= right.z; j += 1) {
-          GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
-          cube.GetComponent<Renderer> ().material.color = red;
-          cube.transform.position = new Vector3 ((right1.x + ((j - right1.z) * rdiffrev)), 0, (float)j);
-          cube.tag = "rightside";
+        for (float h = 0; h < 3; h += 1)
+        {
+                    for (float j = left.x; j <= left1.x; j += 1) {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.GetComponent<Renderer>().material.color = red;
+                        cube.transform.position = new Vector3(j, h, (left.z + ((j - left.x) * ldiff)));
+                        cube.tag = "leftside";
+                    }
+                    for (float j = left1.x; j <= left.x; j += 1) {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.GetComponent<Renderer>().material.color = red;
+                        cube.transform.position = new Vector3(j, h, (left1.z + ((j - left1.x) * ldiff)));
+                        cube.tag = "leftside";
+                    }
+                    for (float j = left.z; j <= left1.z; j += 1) {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.GetComponent<Renderer>().material.color = red;
+                        cube.transform.position = new Vector3((left.x + ((j - left.z) * ldiffrev)), h, (float)j);
+                        cube.tag = "leftside";
+                    }
+                    for (float j = left1.z; j <= left.z; j += 1) {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.GetComponent<Renderer>().material.color = red;
+                        cube.transform.position = new Vector3((left1.x + ((j - left1.z) * ldiffrev)), h, (float)j);
+                        cube.tag = "leftside";
+                    }
+                    for (float j = right.x; j <= right1.x; j += 1) {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.GetComponent<Renderer>().material.color = red;
+                        cube.transform.position = new Vector3(j, h, (float)(right.z + ((j - right.x) * rdiff)));
+                        cube.tag = "rightside";
+                    }
+                    for (float j = right1.x; j <= right.x; j += 1) {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.GetComponent<Renderer>().material.color = red;
+                        cube.transform.position = new Vector3(j, h, (float)(right1.z + ((j - right1.x) * rdiff)));
+                        cube.tag = "rightside";
+                    }
+                    for (float j = right.z; j <= right1.z; j += 1) {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.GetComponent<Renderer>().material.color = red;
+                        cube.transform.position = new Vector3((right.x + ((j - right.z) * rdiffrev)), h, (float)j);
+                        cube.tag = "rightside";
+                    }
+                    for (float j = right1.z; j <= right.z; j += 1) {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.GetComponent<Renderer>().material.color = red;
+                        cube.transform.position = new Vector3((right1.x + ((j - right1.z) * rdiffrev)), h, (float)j);
+                        cube.tag = "rightside";
+                    }
         }
       }
 
