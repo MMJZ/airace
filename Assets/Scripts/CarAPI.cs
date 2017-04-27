@@ -42,6 +42,10 @@ public class CarAPI {
     return state.velocity;
   }
 
+  public float getSpeed() {
+    return state.velocity.magnitude;
+  }
+
   public float getTurnAngle() {
     return state.turnAngle;
   }

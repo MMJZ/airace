@@ -40,7 +40,7 @@ namespace UnityStandardAssets.Vehicles.Car {
         this.track = track;
         state = t;
         car.transform.position += new Vector3 ((float)t.lastNode.position.x, 0, (float)t.lastNode.position.z);
-        car.transform.Rotate (0, 90 - (float)t.lastNode.theta, 0);
+        car.transform.Rotate (0, (float)t.lastNode.theta, 0);
         controller = car.GetComponent<CarController> ();
         try {
           simulator = new Simulator (script);
@@ -81,7 +81,7 @@ namespace UnityStandardAssets.Vehicles.Car {
           end
         end";
       string nickname = "";
-      int trackNum = 0;
+      int trackNum = 4;
       int racetype = 0;
 
 //      if angle > 0 then
