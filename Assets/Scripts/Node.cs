@@ -38,7 +38,7 @@ public class Node {
   //    this.rightSide = new Vector3 (rightSide.x, rightSide.y, rightSide.z);
   //  }
   //
-  //  public Node clone() {
-  //    return new Node (position, theta, width, leftSide, rightSide);
-  //  }
+    public Node clone() {
+		return new Node (position.x, position.z, theta, width);
+    }
 }

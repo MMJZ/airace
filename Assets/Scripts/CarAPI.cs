@@ -35,11 +35,11 @@ public class CarAPI {
   }
 
   public Vector3 getPosition() {
-    return state.position;
+	return new Vector3(state.position.x, state.position.y, state.position.z);
   }
 
   public Vector3 getVelocity() {
-    return state.velocity;
+	return new Vector3(state.velocity.x, state.velocity.y, state.velocity.z);
   }
 
   public float getTurnAngle() {
@@ -55,8 +55,7 @@ public class CarAPI {
   }
 
   public Node getNextNode() {
-    // change – node isn't protected
-    return state.nextNode;
+	return state.nextNode.clone();
   }
 
   public float getDistanceToLeftSide() {
