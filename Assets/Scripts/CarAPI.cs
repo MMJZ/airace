@@ -35,11 +35,11 @@ public class CarAPI {
   }
 
   public Vector3 getPosition() {
-    return state.position;
+	return new Vector3(state.position.x, state.position.y, state.position.z);
   }
 
   public Vector3 getVelocity() {
-    return state.velocity;
+	return new Vector3(state.velocity.x, state.velocity.y, state.velocity.z);
   }
 
   public float getSpeed() {
@@ -59,21 +59,19 @@ public class CarAPI {
   }
 
   public Node getNextNode() {
-    // change – node isn't protected
-    return state.nextNode;
+	return state.nextNode.clone();
   }
 
   public float getDistanceToLeftSide() {
-    return state.getDistanceToLeftSide ();
+    return state.distanceToLeftSide;
   }
 
   public float getDistanceToRightSide() {
-    return state.getDistanceToRightSide ();
+    return state.distanceToRightSide;
   }
 
   public float getAngleBetweenPoints(float x1, float y1, float x2, float y2) {
     float r = Mathf.Atan2 (y2 - y1, x2 - x1) * 180 / (float)Math.PI;
-    Debug.Log (r);
     return r;
   }
 }

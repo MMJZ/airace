@@ -24,10 +24,9 @@ public class Node {
     this.theta = (float)theta;
     this.width = (float)width;
     this.position = new Vector3 ((float)x, 0, (float)z);
-    float lrad = (float)(Math.PI * (theta - 180) / 180);
-    float rrad = (float)(Math.PI * (theta) / 180);
-    this.leftSide = new Vector3 ((float)(x + width * Math.Cos (lrad)), 0, (float)(z + width * Math.Sin (lrad)));
-    this.rightSide = new Vector3 ((float)(x + width * Math.Cos (rrad)), 0, (float)(z + width * Math.Sin (rrad)));
+    float rad = (float)(Math.PI * theta / 180);
+    this.leftSide = new Vector3 ((float)(x - width * Math.Cos (rad)), 0, (float)(z - width * Math.Sin (rad)));
+    this.rightSide = new Vector3 ((float)(x + width * Math.Cos (rad)), 0, (float)(z + width * Math.Sin (rad)));
   }
 
   //  public Node(Vector3 position, float theta, float width, Vector3 leftSide, Vector3 rightSide) {
@@ -38,7 +37,7 @@ public class Node {
   //    this.rightSide = new Vector3 (rightSide.x, rightSide.y, rightSide.z);
   //  }
   //
-  //  public Node clone() {
-  //    return new Node (position, theta, width, leftSide, rightSide);
-  //  }
+  public Node clone() {
+    return new Node (position.x, position.z, theta, width);
+  }
 }
