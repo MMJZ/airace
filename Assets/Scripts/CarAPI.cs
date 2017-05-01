@@ -35,11 +35,11 @@ public class CarAPI {
   }
 
   public Vector3 getPosition() {
-	return new Vector3(state.position.x, state.position.y, state.position.z);
+    return new Vector3 (state.position.x, state.position.y, state.position.z);
   }
 
   public Vector3 getVelocity() {
-	return new Vector3(state.velocity.x, state.velocity.y, state.velocity.z);
+    return new Vector3 (state.velocity.x, state.velocity.y, state.velocity.z);
   }
 
   public float getSpeed() {
@@ -59,15 +59,15 @@ public class CarAPI {
   }
 
   public Node getNextNode() {
-	return state.nextNode.clone();
+    return state.nextNode.clone ();
   }
 
   public float getDistanceToLeftSide() {
-    return state.distanceToLeftSide;
+    return state.getDistanceToLeftSide ();
   }
 
   public float getDistanceToRightSide() {
-    return state.distanceToRightSide;
+    return state.getDistanceToRightSide ();
   }
 
   public float getAngleBetweenPoints(float x1, float y1, float x2, float y2) {

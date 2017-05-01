@@ -17,18 +17,17 @@
       <ul>
         <li><a class="jbutton" href="#language">Language</a></li>
         <li><a class="jbutton" href="#credit">Credit</a></li>
-        <li><a class="jbutton" href="#track">Track</a></li>
         <li><a class="jbutton" href="#events">Events</a></li>
-        <li><a class="jbutton" href="#actions">Actions</a></li>
         <li><a class="jbutton" href="#carinfo">Car Info</a></li>
-        <li><a class="jbutton" href="#gameinfo">Game Info</a></li>
+        <li><a class="jbutton" href="#track">Track</a></li>
+        <li><a class="jbutton" href="#actions">Actions</a></li>
       </ul>
     </nav>
   </header>
   <main>
     <section id="language">
       <h2>Language</h2>
-      <p>Lua is the scripting language used for this thing.</p>
+      <p>Lua is the scripting language you should write scripts in. Details about Lua syntax can be found with a quick google.</p>
     </section>
     <section id="credit">
       <h2>Credit</h2>
@@ -42,16 +41,33 @@ function parentScript()
 end
       </code></pre>
     </section>
-    <section id="track">
-      <h2>Track</h2>
-      <p>A track is represented as a sequence of nodes.</p>
-    </section>
     <section id="events">
       <h2>Events</h2>
       <p>Implement these functions to allow the program to drive the car around the track.</p>
       <p><code class="function">start()</code>This is called only once when the race starts.</p>
       <p><code class="function">update()</code>This is called once every tick of the race.</p>
       <p><code class="function">newSection()</code>This is called when the car enters a new section of the track.</p>
+    </section>
+    <section id="carinfo">
+      <h2>Car Info</h2>
+      <p>Use the<code class="function inlinefunction">car</code>object to get information about the car.</p>
+      <p><code class="function">car:getPosition().x</code>The X coordinate of the car's position.</p>
+      <p><code class="function">car:getPosition().z</code>The Z coordinate of the car's position.</p>
+      <p><code class="function">car:getVelocity().x</code>The X coordinate of the car's velocity.</p>
+      <p><code class="function">car:getVelocity().z</code>The Z coordinate of the car's velocity.</p>
+      <p><code class="function">car:getSpeed()</code>The car's overall speed.</p>
+      <p><code class="function">car:getTurnAngle()</code>The angle at which the car is currently turning.</p>
+      <p><code class="function">car:getFacingAngle()</code>The direction in which the car is facing.</p>
+      <p><code class="function">car:getDistanceToLeftSide()</code>The distance to the nearest wall on the left side.</p>
+      <p><code class="function">car:getDistanceToRightSide()</code>The distance to the nearest wall on the right side.</p>
+    </section>
+    <section id="track">
+      <h2>Track Info</h2>
+      <p>A track is represented as a sequence of nodes.</p>
+      <p>Use the<code class="function inlinefunction">car</code>object to get information about its position on the track.</p>
+      <p><code class="function">car:lastNode()</code>The last node the car passed through</p>
+      <p><code class="function">car:nextNode()</code>The next node the car must pass through.</p>
+      <p><code class="function">car:nodeAfter()</code>The node the car must pass through after passing the next node.</p>
     </section>
     <section id="actions">
       <h2>Actions</h2>
@@ -67,20 +83,6 @@ function update()
   -- accelerate every tick
 end
       </code></pre>
-    </section>
-    <section id="carinfo">
-      <h2>Car Info</h2>
-      <p>Use the<code class="function inlinefunction">car</code>object to get information about the car.</p>
-      <p><code class="function">car.position.x</code>The X coordinate of the car's position.</p>
-      <p><code class="function">car.position.z</code>The Z coordinate of the car's position.</p>
-      <p><code class="function">car.speed</code>The speed of the car.</p>
-    </section>
-    <section id="gameinfo">
-      <h2>Track Info</h2>
-      <p>Use the<code class="function inlinefunction">track</code>object to get information about the track.</p>
-      <p><code class="function">track.lastNode</code>The last node the car passed through</p>
-      <p><code class="function">track.nextNode</code>The next node the car must pass through.</p>
-      <p><code class="function">track.nodeAfter</code>The node the car must pass through after passing <code class="function inlinefunction">track.nextNode</code>.</p>
     </section>
   </main>
 </body>

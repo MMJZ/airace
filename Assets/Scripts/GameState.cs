@@ -6,28 +6,22 @@ public class GameState {
   public float turnAngle, tiltAngle, maxSafeTurningAngle, facingAngle;
   public Vector3 position, velocity;
   public Node lastNode, nextNode, nodeAfter;
-  public bool deadCar, finishedCar, enteredNewSegment;
-  public int timer;
+  public bool enteredNewSegment;
   public float distanceToLeftSide, distanceToRightSide;
 
-
-  public GameState(Node lastNode, Node nextNode, Node nodeAfter, int timer) {
+  public GameState(Track track) {
     this.turnAngle = 0;
     this.tiltAngle = 0;
     this.maxSafeTurningAngle = 0;
     this.facingAngle = 0;
     this.position = new Vector3 (0, 0, 0);
     this.velocity = new Vector3 (0, 0, 0);
-    this.lastNode = lastNode;
-    this.nextNode = nextNode;
-    this.nodeAfter = nodeAfter;
-    this.deadCar = false;
-    this.finishedCar = false;
+    this.lastNode = track.nodes [0];
+    this.nextNode = track.nodes [1];
+    this.nodeAfter = track.nodes [2];
     this.enteredNewSegment = false;
-    this.timer = timer;
     this.distanceToLeftSide = 0;
     this.distanceToRightSide = 0;
-
   }
 
   public void setTurnAngle(float turnAngle) {
@@ -62,18 +56,23 @@ public class GameState {
     Debug.Log ("new node");
   }
 
-  public void notifyDead() {
-    deadCar = true;
+  public float getDistanceToLeftSide() {
+    Vector2 A = new Vector2 (lastNode.leftSide.x, lastNode.leftSide.z);
+    Vector2 B = new Vector2 (nextNode.leftSide.x, nextNode.leftSide.z);
+    Vector2 W = A - B;
+    Vector2 C = new Vector2 (-W.y, W.x);
+    Vector2 P = new Vector2 (position.x, position.z);
+    float n = (W.x * P.y - W.y * P.x + W.y * A.x - W.x * A.y) / (W.y * C.x - W.x * C.y);
+    return (n * C).magnitude;
   }
 
-  public void notifyFinished() {
-    finishedCar = true;
+  public float getDistanceToRightSide() {
+    Vector2 A = new Vector2 (lastNode.rightSide.x, lastNode.rightSide.z);
+    Vector2 B = new Vector2 (nextNode.rightSide.x, nextNode.rightSide.z);
+    Vector2 W = A - B;
+    Vector2 C = new Vector2 (W.y, -W.x);
+    Vector2 P = new Vector2 (position.x, position.z);
+    float n = (W.x * P.y - W.y * P.x + W.y * A.x - W.x * A.y) / (W.y * C.x - W.x * C.y);
+    return (n * C).magnitude;
   }
-
-  public void setDistances(float left, float right){
-    distanceToLeftSide = left;
-    distanceToRightSide = right;
-  }
-
-
 }
