@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Xml;
 
 public class GameState {
 
@@ -7,7 +8,6 @@ public class GameState {
   public Vector3 position, velocity;
   public Node lastNode, nextNode, nodeAfter;
   public bool enteredNewSegment;
-  public float distanceToLeftSide, distanceToRightSide;
 
   public GameState(Track track) {
     this.turnAngle = 0;
@@ -20,8 +20,6 @@ public class GameState {
     this.nextNode = track.nodes [1];
     this.nodeAfter = track.nodes [2];
     this.enteredNewSegment = false;
-    this.distanceToLeftSide = 0;
-    this.distanceToRightSide = 0;
   }
 
   public void setTurnAngle(float turnAngle) {
@@ -48,10 +46,10 @@ public class GameState {
     velocity.Set (vel.x, vel.y, vel.z);
   }
 
-  public void newSegment(Node newNode) {
-    lastNode = nextNode;
-    nextNode = nodeAfter;
-    nodeAfter = newNode;
+  public void newSegment(Track track, int newLast) {
+    lastNode = track.nodes [newLast];
+    nextNode = track.nodes [(newLast + 1) % track.nodes.Length];
+    nodeAfter = track.nodes [(newLast + 2) % track.nodes.Length];
     enteredNewSegment = true;
     Debug.Log ("new node");
   }
@@ -63,7 +61,8 @@ public class GameState {
     Vector2 C = new Vector2 (-W.y, W.x);
     Vector2 P = new Vector2 (position.x, position.z);
     float n = (W.x * P.y - W.y * P.x + W.y * A.x - W.x * A.y) / (W.y * C.x - W.x * C.y);
-    return (n * C).magnitude;
+    float r = (n * C).magnitude;
+    return float.IsNaN (r) ? Vector3.Distance (position, lastNode.leftSide) : r;
   }
 
   public float getDistanceToRightSide() {
@@ -73,6 +72,16 @@ public class GameState {
     Vector2 C = new Vector2 (W.y, -W.x);
     Vector2 P = new Vector2 (position.x, position.z);
     float n = (W.x * P.y - W.y * P.x + W.y * A.x - W.x * A.y) / (W.y * C.x - W.x * C.y);
-    return (n * C).magnitude;
+    float r = (n * C).magnitude;
+    return float.IsNaN (r) ? Vector3.Distance (position, lastNode.rightSide) : r;
+  }
+
+  public float getSpeed() {
+    return velocity.magnitude * 3.5f;
+  }
+
+  public float getAngleBetweenPoints(float x1, float y1, float x2, float y2) {
+    float r = 90 - Mathf.Atan2 (y2 - y1, x2 - x1) * 180 / (float)Math.PI;
+    return r < 0 ? r + 360 : r;
   }
 }

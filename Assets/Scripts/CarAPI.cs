@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEditorInternal;
+using UnityEngine.UI;
 
 public class CarAPI {
 
@@ -43,7 +44,7 @@ public class CarAPI {
   }
 
   public float getSpeed() {
-    return state.velocity.magnitude;
+    return state.getSpeed ();
   }
 
   public float getTurnAngle() {
@@ -71,7 +72,11 @@ public class CarAPI {
   }
 
   public float getAngleBetweenPoints(float x1, float y1, float x2, float y2) {
-    float r = Mathf.Atan2 (y2 - y1, x2 - x1) * 180 / (float)Math.PI;
-    return r;
+    float r = 90 - Mathf.Atan2 (y2 - y1, x2 - x1) * 180 / (float)Math.PI;
+    return r < 0 ? r + 360 : r;
+  }
+
+  public float getDistanceToNextNode() {
+    return Vector3.Distance (state.position, state.nextNode.position);
   }
 }

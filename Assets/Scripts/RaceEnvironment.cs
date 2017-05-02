@@ -8,7 +8,7 @@ namespace UnityStandardAssets.Vehicles.Car {
 
     public static RaceEnvironment instance;
 
-    public Text timeText;
+    public Text timeText, speedText;
     private Racer[] racers;
     private int timer = 0;
     private bool isTrial;
@@ -20,6 +20,7 @@ namespace UnityStandardAssets.Vehicles.Car {
       protected Simulator simulator;
       protected GameState state;
       protected GameObject car;
+      protected GameObject carFront;
       protected CarController controller;
       protected Track track;
       protected int lastNode = 0, latestVisitedNode = 0;
@@ -27,6 +28,7 @@ namespace UnityStandardAssets.Vehicles.Car {
 
       public Racer(int position, string script, Track track) {
         car = GameObject.FindGameObjectWithTag ("Car"); // TODO fix this
+        carFront = GameObject.FindGameObjectWithTag ("carFront");
         RacerData data = GameObject.FindGameObjectWithTag ("CarBody").AddComponent <RacerData> ();
         data.id = position;
         this.track = track;
@@ -43,6 +45,7 @@ namespace UnityStandardAssets.Vehicles.Car {
           simulator = new Simulator (script);
           simulator.start (state);
         } catch (NLua.Exceptions.LuaException e) {
+          Debug.Log ("LUA ERROR");
           Debug.Log (e.ToString ());
         }
       }
@@ -50,15 +53,37 @@ namespace UnityStandardAssets.Vehicles.Car {
       public virtual bool update() {
 
         //Debug.Log (state.getDistanceToLeftSide () + " " + state.getDistanceToRightSide ());
+        //Debug.Log (state.turnAngle);
+//        Vector3 pos = state.position;
+//        Vector3 nod = state.nextNode.position;
+//        float angle = state.getAngleBetweenPoints (pos.x, pos.z, nod.x, nod.z);
+//        float face = state.facingAngle;
+//
+//        if(angle > 180) {
+//          if(face > angle || face < angle - 180) {
+//            Debug.Log ("left " + angle + " " + face);
+//          } else {
+//            Debug.Log ("right " + angle + " " + face);
+//          }
+//        } else {
+//          if(face < angle || face > angle + 180) {
+//            Debug.Log ("right " + angle + " " + face);
+//          } else {
+//            Debug.Log ("left " + angle + " " + face);
+//          }
+//        }
+
 
         try {
           CarAction action = simulator.update (state);
-          controller.Move (controller.CurrentSteerAngle / 15 + action.turn * 0.05f, action.accel, 0, 0);
+          controller.Move (controller.CurrentSteerAngle / 20 + action.turn * 0.05f, action.accel, 0, 0);
           state.setTurnAngle (controller.CurrentSteerAngle);
           state.setPosition (car.transform.position);
+          state.setPosition (carFront.transform.position);
           state.setVelocity (controller.CurrentVelocity);
-          state.setFacingAngle (car.transform.rotation.y * 180 / (float)Math.PI);
+          state.setFacingAngle (car.transform.eulerAngles.y);
         } catch (NLua.Exceptions.LuaException e) {
+          Debug.Log ("LUA ERROR");
           Debug.Log (e.ToString ());
         }
         return finishedRace;
@@ -78,23 +103,23 @@ namespace UnityStandardAssets.Vehicles.Car {
           }
         }
         lastNode = gateid;
-        state.newSegment (track.nodes [(lastNode + 2) % track.nodes.Length]);
+        state.newSegment (track, lastNode);
       }
     }
 
     class TrialRacer : Racer {
       private RaceStats stats;
 
-      public TrialRacer(string script, Track track) : base (-1, script, track) {
-        stats = new RaceStats ();
+      public TrialRacer(string script, Track track, RaceStats stats) : base (-1, script, track) {
+        this.stats = stats;
       }
 
       public int getParentScriptID() {
         return simulator.getParentScriptID ();
       }
 
-      public RaceStats getStats() {
-        return stats;
+      public float getSpeed() {
+        return state.getSpeed ();
       }
 
       public override bool update() {
@@ -109,6 +134,7 @@ namespace UnityStandardAssets.Vehicles.Car {
       instance = this;
 
       timeText.text = "X";
+      speedText.text = "X";
 
       Track track = MainMenu.tracks [MainMenu.trackNumber];
       string script = MainMenu.script;
@@ -118,9 +144,9 @@ namespace UnityStandardAssets.Vehicles.Car {
       if(isTrial) {
 
         // generate car object
-        TrialRacer racer = new TrialRacer (script, track);
+        stats = new RaceStats ();
+        TrialRacer racer = new TrialRacer (script, track, stats);
         parentScriptID = racer.getParentScriptID ();
-        stats = racer.getStats ();
         racers = new Racer[]{ racer };
       } else {
         int noRacers = MainMenu.noRacers;
@@ -139,16 +165,18 @@ namespace UnityStandardAssets.Vehicles.Car {
     void FixedUpdate() {
       timer += 1;
       timeText.text = timer.ToString ();
+      speedText.text = string.Format ("{0:N2}", ((TrialRacer)racers [0]).getSpeed ()) + "kmh";
       if(isTrial) {
         if(racers [0].update ()) {
           stats.time = timer;
           SceneManager.LoadScene ("End Screen");
         }
       } else {
-        foreach (Racer r in racers)
-          if(r.update ()) {
-            
+        for (int x = 0; x < racers.Length; x++) {
+          if(racers [x].update ()) {
+            bool leftSide = x % 2 == 0;
           }
+        }
       }
     }
   }

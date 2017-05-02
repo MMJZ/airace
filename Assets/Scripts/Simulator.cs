@@ -1,5 +1,6 @@
 ﻿using NLua;
 using UnityEngine;
+using System;
 
 public class Simulator {
 
@@ -30,12 +31,11 @@ public class Simulator {
   }
 
   public int getParentScriptID() {
-    System.Object[] res = CallScript ("ParentScript");
-    if(res == null)
+    try {
+      return (int)CallScript ("ParentScript") [0];
+    } catch (Exception e) {
       return 0;
-    else
-			//TODO convert function result to int safely; return 0 if error
-			return 0;
+    }
   }
 
   public System.Object[] CallScript(string function) {

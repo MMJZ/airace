@@ -20,7 +20,7 @@ public class TrackRenderer : MonoBehaviour {
       CheckPointTrigger trig = plane.AddComponent <CheckPointTrigger> ();
       trig.gateid = i;
 
-      /*
+      //*
       GameObject po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
       po.transform.position = node.position;
 
@@ -100,7 +100,6 @@ public class TrackRenderer : MonoBehaviour {
         }
         break;
       case 1:
-
         Color blue = new Color (0, 0, 1);
         for (int x = 0; x < track.nodes.Length; x++) {
           Node n1 = track.nodes [x];
@@ -112,6 +111,8 @@ public class TrackRenderer : MonoBehaviour {
           lc.transform.LookAt (n2.leftSide);
           lc.transform.Rotate (0, 90, 0);
           lc.GetComponent<Renderer> ().material.color = blue;
+
+          Destroy (lc.GetComponent <BoxCollider> ());
 
           GameObject po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
           po.transform.position = n1.leftSide + new Vector3 (0, -0.5f, 0);
@@ -125,11 +126,13 @@ public class TrackRenderer : MonoBehaviour {
           lc.transform.Rotate (0, 90, 0);
           lc.GetComponent<Renderer> ().material.color = blue;
 
+
+          Destroy (lc.GetComponent <BoxCollider> ());
+
           po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
           po.transform.position = n1.rightSide + new Vector3 (0, -0.5f, 0);
           po.GetComponent<Renderer> ().material.color = blue;
         }
-
         break;
     }
   }
