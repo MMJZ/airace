@@ -11,7 +11,7 @@ namespace UnityStandardAssets.Vehicles.Car {
 
     public static RaceEnvironment instance;
 
-    public Text timeText, speedText;
+    public Text timeText, speedText, errorText;
     private Racer[] racers;
     private int timer = 0;
     private bool isTrial;
@@ -48,8 +48,7 @@ namespace UnityStandardAssets.Vehicles.Car {
           simulator = new Simulator (script);
           simulator.start (state);
         } catch (NLua.Exceptions.LuaException e) {
-          Debug.Log ("LUA ERROR");
-          Debug.Log (e.ToString ());
+          instance.ShowErrorAndQuit ("LUA ERROR: " + e.ToString());
         }
       }
 
@@ -86,8 +85,8 @@ namespace UnityStandardAssets.Vehicles.Car {
           state.setVelocity (controller.CurrentVelocity);
           state.setFacingAngle (car.transform.eulerAngles.y);
         } catch (NLua.Exceptions.LuaException e) {
-          Debug.Log ("LUA ERROR");
-          Debug.Log (e.ToString ());
+          instance.ShowErrorAndQuit ("LUA ERROR: " + e.ToString());
+          
         }
         return finishedRace;
       }
@@ -132,7 +131,26 @@ namespace UnityStandardAssets.Vehicles.Car {
       }
     }
 
+    protected void ShowErrorAndQuit(string s){
+      Time.timeScale = 0;
+      errorText.text = s;
+      Quit ();
+    }
+
+    public void Quit(){
+      stats.time = timer;
+
+      socket.Emit ("ResultToServer"
+        //,
+        //Generate results here
+      );
+      SceneManager.LoadScene ("Start");
+
+      //SceneManager.LoadScene ("End Screen");
+    }
+
     void Start() {
+
       GameObject go = GameObject.Find("SocketIO");
       socket = go.GetComponent<SocketIOComponent>();
 
@@ -173,15 +191,7 @@ namespace UnityStandardAssets.Vehicles.Car {
       speedText.text = string.Format ("{0:N2}", ((TrialRacer)racers [0]).getSpeed ()) + "kmh";
       if(isTrial) {
         if(racers [0].update ()) {
-          stats.time = timer;
-
-          socket.Emit ("ResultToServer"
-          //,
-          //Generate results here
-          );
-          SceneManager.LoadScene ("Start");
-
-          //SceneManager.LoadScene ("End Screen");
+          Quit ();
         }
       } else {
         for (int x = 0; x < racers.Length; x++) {
