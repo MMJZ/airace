@@ -2,9 +2,12 @@
 using System;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using SocketIO;
 
 namespace UnityStandardAssets.Vehicles.Car {
   public class RaceEnvironment : MonoBehaviour {
+
+    private SocketIOComponent socket;
 
     public static RaceEnvironment instance;
 
@@ -130,6 +133,8 @@ namespace UnityStandardAssets.Vehicles.Car {
     }
 
     void Start() {
+      GameObject go = GameObject.Find("SocketIO");
+      socket = go.GetComponent<SocketIOComponent>();
 
       instance = this;
 
@@ -169,7 +174,14 @@ namespace UnityStandardAssets.Vehicles.Car {
       if(isTrial) {
         if(racers [0].update ()) {
           stats.time = timer;
-          SceneManager.LoadScene ("End Screen");
+
+          socket.Emit ("ResultToServer"
+          //,
+          //Generate results here
+          );
+          SceneManager.LoadScene ("Start");
+
+          //SceneManager.LoadScene ("End Screen");
         }
       } else {
         for (int x = 0; x < racers.Length; x++) {
