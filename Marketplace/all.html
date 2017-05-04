@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>AI Racing</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300|Source+Code+Pro:300" rel="stylesheet">
+  <link rel="stylesheet" href="all.css">
+  <link rel="stylesheet" href="/hlua/highlight.css">
+  <script src="hlua/highlight.pack.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+
+</head>
+
+<body>
+  <nav>
+    <ul>
+      <li>∴</li>
+      <li onclick="loadPage('marketplace')" id="navmarketplace">marketplace</li>
+      <li onclick="loadPage('leaderboard')" id="navleaderboard">leaderboard</li>
+      <li onclick="loadPage('editor')" id="naveditor">editor</li>
+      <li onclick="loadPage('options')" id="navoptions">options</li>
+      <li onclick="loadPage('results')" id="navresults">results</li>
+      <li onclick="tryRun()" id="runcont">
+        run
+      </li>
+    </ul>
+  </nav>
+
+  <main class="tabwrapper" id="marketplace">
+    <div class="chart" id="marketcont"></div>
+  </main>
+  <main class="tabwrapper" id="leaderboard">
+    <div id="leadercont"></div>
+  </main>
+
+  <main class="tabwrapper" id="editor">
+    <div class="splitter">
+      <div>
+        <section id="language">
+          <h2>Language</h2>
+          <p>Lua is the scripting language you should write scripts in. Details about Lua syntax can be found with a quick google.</p>
+        </section>
+        <section id="events">
+          <h2>Events</h2>
+          <p>Implement these functions to allow the program to drive the car around the track.</p>
+          <p><code class="function">start()</code>This is called only once when the race starts.</p>
+          <p><code class="function">update()</code>This is called once every tick of the race.</p>
+          <p><code class="function">newSection()</code>This is called when the car enters a new section of the track.</p>
+        </section>
+        <section id="carinfo">
+          <h2>Car Info</h2>
+          <p>Use the<code class="function inlinefunction">car</code>object to get information about the car.</p>
+          <p><code class="function">car:getPosition().x</code>The X coordinate of the car's position.</p>
+          <p><code class="function">car:getPosition().z</code>The Z coordinate of the car's position.</p>
+          <p><code class="function">car:getVelocity().x</code>The X coordinate of the car's velocity.</p>
+          <p><code class="function">car:getVelocity().z</code>The Z coordinate of the car's velocity.</p>
+          <p><code class="function">car:getSpeed()</code>The car's overall speed.</p>
+          <p><code class="function">car:getTurnAngle()</code>The angle at which the car is currently turning.</p>
+          <p><code class="function">car:getFacingAngle()</code>The direction in which the car is facing.</p>
+          <p><code class="function">car:getDistanceToLeftSide()</code>The distance to the nearest wall on the left side.</p>
+          <p><code class="function">car:getDistanceToRightSide()</code>The distance to the nearest wall on the right side.</p>
+        </section>
+        <section id="track">
+          <h2>Track Info</h2>
+          <p>A track is represented as a sequence of nodes.</p>
+          <p>Use the<code class="function inlinefunction">car</code>object to get information about the nodes closest to it on the track.</p>
+          <p><code class="function">car:lastNode()</code>The last node the car passed through</p>
+          <p><code class="function">car:nextNode()</code>The next node the car must pass through.</p>
+          <p><code class="function">car:nodeAfter()</code>The node the car must pass through after passing the next node.</p>
+          <p>Each <code class="function">node</code>has useful information about the track at that point.</p>
+          <p><code class="function">node.position</code>The position of the node. This will always be in the centre of the track.</p>
+          <p><code class="function">node.leftSide</code>The position of the point on the left wall nearest this node.</p>
+          <p><code class="function">node.rightSide</code>The position of the point on the right wall nearest this node. The position, left side and right side will always lie on the same line.</p>
+          <p><code class="function">node.width</code>The distance between the position and the two side points. Equal to half the total track width at that node.</p>
+        </section>
+        <section id="actions">
+          <h2>Actions</h2>
+          <p>Use the<code class="function inlinefunction">car</code>object to manipulate the car.</p>
+          <p><code class="function">car:accelerate()</code>The X coordinate of the car's position.</p>
+          <p><code class="function">car:decelerate()</code>The Z coordinate of the car's position.</p>
+          <p><code class="function">car:turnLeft()</code>The X coordinate of the car's position.</p>
+          <p><code class="function">car:turnRight()</code>The Z coordinate of the car's position.</p>
+          <span class="precaption">Example:</span>
+          <pre class="examplecode"><code>
+function update()
+  car:accelerate()
+  -- accelerate every tick
+end
+            </code></pre>
+        </section>
+      </div>
+      <div>
+        <textarea id="scripteditor">asd</textarea>
+      </div>
+    </div>
+  </main>
+
+  <main class="tabwrapper" id="options"></main>
+
+  <main class="tabwrapper" id="results"></main>
+
+
+  <script>
+    localStorage.marketplace = JSON.stringify({
+      text: {
+        name: "b",
+        desc: 0
+      },
+      stats: {
+        time: 0
+      },
+      script: "a",
+      children: [{
+          text: {
+            name: "asdd",
+            desc: 1
+          },
+          stats: {
+            time: 2000
+          },
+          script: "a",
+          children: []
+        },
+        {
+          text: {
+            name: "asd",
+            desc: 2
+          },
+          stats: {
+            time: 1000
+          },
+          script: "a",
+          children: []
+        }
+      ]
+    });
+  </script>
+
+
+  <script>
+    // Game options
+    var trackNo = 0;
+    var trackType = 0;
+    // Scripts
+    var entries = new Map();
+    // Leaderboard options
+    var toptentype = 1;
+
+    function loadPage(page) {
+      document.getElementsByClassName("activetab")[0].className = "";
+      document.getElementsByClassName("activemain")[0].className = "tabwrapper";
+      document.getElementById("nav" + page).className = "activetab";
+      document.getElementById(page).className = "tabwrapper activemain";
+      if (page === "leaderboard") genLeaderboard(toptentype);
+    }
+
+    function loadScript(ID) {
+      let container = document.getElementById("scriptviewcontainer");
+      let entry = entries.get(ID);
+      let script = entry.script;
+      let name = entry.name;
+      container.innerHTML = `
+<div class="asidecontainer"><nav>
+<h2>(${ID}) ${name}\'s Script</h2>
+<div class="jbutton" onclick="copyTweak(${ID})">tweak</div>
+</nav><pre><code>${script}</pre></code></div>`;
+      container.addEventListener("click", function(e) {
+        e = window.event || e;
+        if (e.target === this || e.target.tagName === "aside") hideScript();
+      });
+      hljs.highlightBlock(container.getElementsByTagName("code")[0]);
+      container.style.display = "block";
+    }
+
+    function hideScript() {
+      let container = document.getElementById("scriptviewcontainer");
+      container.innerHTML = "";
+      container.style.display = "none";
+    }
+
+    function copyTweak(entry) {
+      let script = entry.script;
+      // TODO clipboard
+      alert("Script copied to clipboard :D");
+    }
+
+
+
+    function tryRun() {
+      let scripttext = document.getElementById("scripteditor").value;
+      let data = {
+        script: scripttext,
+        trackNo: trackNo,
+        trackType: trackType
+      };
+      socket.emit('isReady');
+      socket.on('readyStatus', ready => {
+        if (ready) socket.emit('run', data);
+        else {
+          alert('no unity instance');
+        }
+      });
+    }
+
+    function receiveResults(data) {
+      alert(data); //TODO populate results page
+    }
+
+    function genLeaderboard(type) {
+
+      console.log(entries.size);
+      console.log(entries.values().next().value.stats.time);
+
+      let cont = document.getElementById("leadercont");
+      cont.innerHTML = "";
+      let f;
+      let tops = [];
+      if (type === 1) f = (e1, e2) => e1.stats.time < e1.stats.time;
+      for (let entry of entries.values()) {
+        p = 10;
+        while (p > 0 && (!tops[p] || f(entry, tops[p - 1]))) p--;
+        for (let x = 9; x > p; x--) {
+          tops[x] = tops[x - 1];
+        }
+        tops[p] = entry;
+      }
+      let place = 0;
+      for (let entry of tops) {
+        if (!entry) continue;
+        place += 1;
+        let specialclass = "";
+        if (place === 1) specialclass = " firstplace";
+        else if (place === 2) specialclass = " secondplace";
+        else if (place === 3) specialclass = " thirdplace";
+        let time = entry.stats.time;
+        cont.innerHTML += `
+        <section>
+          <span class="place ${specialclass}">${place}</span>
+          <span class="time">${(Math.floor(time / 60000)) + ":" + (Math.floor(time / 1000) % 60)}</span>
+          <span class="millis">${"." + (time % 1000)}</span>
+          <span class="nickname">${entry.name}</span>
+          <span class="leaderscriptbutton" onclick="loadScript(${place})">View Script</span>
+        </section>`;
+      }
+    }
+
+    function addToMap(parentID, entry) {
+      let childrenIDs = [];
+      for (let child of entry.children) {
+        childrenIDs.push(child.text.desc);
+        addToMap(entry.text.desc, child);
+      }
+      entries.set(entry.text.desc, {
+        ID: entry.text.desc,
+        parentID: parentID,
+        script: entry.script,
+        name: entry.text.name,
+        stats: entry.stats,
+        childrenIDs: childrenIDs
+      });
+    }
+
+    function ready() {
+      //tabs
+      document.getElementById("leaderboard").className = "tabwrapper activemain";
+      document.getElementById("navleaderboard").className = "activetab";
+      //marketplace
+      let marketplace = JSON.parse(localStorage.marketplace);
+      addToMap(-1, marketplace);
+      var struct = {
+        chart: {
+          container: "#marketcont",
+          levelSeparation: 200,
+          siblingSeparation: 170,
+          subTeeSeparation: 20,
+          padding: 50,
+          nodeAlign: "BOTTOM",
+          node: {
+            HTMLclass: "marketplacetree"
+          },
+          connectors: {
+            type: "curve",
+            style: {
+              "stroke-width": 5,
+              "stroke-linecap": "round",
+              "stroke": "#fff",
+              "opacity": 0.1
+            }
+          }
+        },
+        nodeStructure: marketplace
+      };
+      new Treant(struct);
+      for (let node of document.getElementsByClassName("node")) {
+        node.addEventListener("click", function(e) {
+          loadScript(node.getElementsByClassName("node-desc")[0].innerHTML);
+        });
+      }
+
+      // server
+      //var socket = io('http://127.0.0.1:6565');
+      //socket.emit('isBrowser');
+      //socket.on('finishedRun', receiveResults);
+    }
+    ready();
+  </script>
+
+</body>
+
+</html>
