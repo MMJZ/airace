@@ -7,6 +7,7 @@
 body {
   font-family: 'Roboto', sans-serif;
   background-image: url(img/back.png);
+  min-height: 100vh;
 }
 
 nav {
@@ -23,11 +24,6 @@ nav li {
   padding: 15px 30px;
 }
 
-#logo {
-  padding: 10px 40px;
-  font-size: 1.3em;
-}
-
 #runcont {
   float: right;
   background-color: grey;
@@ -39,13 +35,34 @@ nav li {
 
 .tabwrapper {
   display: none;
+  min-height: 100vh;
 }
 
 .activemain {
   display: block;
 }
 
-aside {
+.splasher {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.8em;
+  font-weight: 200;
+}
+
+.splasher div {
+  max-width: 90%;
+  text-align: center;
+  background-color: rgba(255,255,255,0.5);
+  padding: 20px 50px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* script view */
+
+#scriptviewcontainer{
   position: absolute;
   top: 0;
   left: 0;
@@ -56,6 +73,7 @@ aside {
   display: none;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 }
 
 .asidecontainer {
@@ -68,8 +86,8 @@ aside {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-aside nav {
-  width: 100%;
+.asidecontainer div {
+/*  width: 100%;*/
   position: relative;
   box-sizing: border-box;
   display: flex;
@@ -81,7 +99,7 @@ aside nav {
   cursor: default;
 }
 
-aside .jbutton {
+aside button {
   margin-left: 30px;
   padding: 6px 10px;
 }
@@ -245,11 +263,6 @@ section p {
   min-width: 50%;
 }
 
-.chart {
-  margin: 0 auto;
-  min-width: 100%;
-}
-
 .node-name {
   color: white;
   font-size: 1.5em;
@@ -262,10 +275,12 @@ section p {
 }
 
 .node {
-  border-radius: 50%;
+  border-radius: 40%;
   background-color: black;
   width: 30px;
   height: 30px;
+  margin-left: -15px;
+  margin-top: -20px;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
   background-color: #ccc;
   border: 1px solid rgba(255, 255, 255, 0.8);
@@ -284,4 +299,13 @@ section p {
   margin-top: -7px;
   text-indent: 12px;
   font-weight: bold;
+}
+
+#chartpadding {
+  padding-top: 200px;
+  margin: 0 auto;
+}
+
+#marketcont {
+  position: relative;
 }

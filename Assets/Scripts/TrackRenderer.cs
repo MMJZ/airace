@@ -6,7 +6,7 @@ public class TrackRenderer : MonoBehaviour {
 
   void Awake() {
 
-    Track track = MainMenu.tracks [MainMenu.trackNumber];
+    Track track = StartScreen.tracks [StartScreen.trackNumber];
 
     for (int i = 0; i < track.nodes.Length; i++) {
       Node node = track.nodes [i];
@@ -16,18 +16,18 @@ public class TrackRenderer : MonoBehaviour {
       plane.transform.Rotate (0, -node.theta, 0);
       plane.GetComponent <MeshCollider> ().convex = true;
       plane.GetComponent <MeshCollider> ().isTrigger = true;
-      //Destroy (plane.GetComponent <MeshRenderer> ());
+      Destroy (plane.GetComponent <MeshRenderer> ());
       CheckPointTrigger trig = plane.AddComponent <CheckPointTrigger> ();
       trig.gateid = i;
 
-      //*
+      /*
       GameObject po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
       po.transform.position = node.position;
 
       // */
     }
 
-    switch (MainMenu.trackType) {
+    switch (StartScreen.trackType) {
       case 0:
         for (int i = 0; i < track.nodes.Length; i += 1) {
           Vector3 left = track.nodes [i].leftSide;

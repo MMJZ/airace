@@ -30,14 +30,6 @@ public class Simulator {
     return action;
   }
 
-  public int getParentScriptID() {
-    try {
-      return (int)CallScript ("ParentScript") [0];
-    } catch (Exception e) {
-      return 0;
-    }
-  }
-
   public System.Object[] CallScript(string function) {
     LuaFunction lf = luaenv.GetFunction (function);
     if(lf == null)

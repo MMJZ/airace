@@ -7,10 +7,7 @@ using SocketIO;
 namespace UnityStandardAssets.Vehicles.Car {
   public class RaceEnvironment : MonoBehaviour {
 
-    private SocketIOComponent socket;
-
     public static RaceEnvironment instance;
-
     public Text timeText, speedText;
     private Racer[] racers;
     private int timer = 0;
@@ -39,10 +36,10 @@ namespace UnityStandardAssets.Vehicles.Car {
         car.transform.Rotate (0, (float)state.lastNode.theta, 0);
         controller = car.GetComponent<CarController> ();
         if(position == -1) {
-          car.transform.position += new Vector3 ((float)state.lastNode.position.x, 0, (float)state.lastNode.position.z);
+          car.transform.position += new Vector3 (state.lastNode.position.x, 0, state.lastNode.position.z);
         } else {
           bool onLeftSide = position % 2 == 0;
-          car.transform.position += new Vector3 ((float)state.lastNode.position.x, 0, (float)state.lastNode.position.z);
+          car.transform.position += new Vector3 (state.lastNode.position.x, 0, state.lastNode.position.z);
         }
         try {
           simulator = new Simulator (script);
@@ -54,28 +51,6 @@ namespace UnityStandardAssets.Vehicles.Car {
       }
 
       public virtual bool update() {
-
-        //Debug.Log (state.getDistanceToLeftSide () + " " + state.getDistanceToRightSide ());
-        //Debug.Log (state.turnAngle);
-//        Vector3 pos = state.position;
-//        Vector3 nod = state.nextNode.position;
-//        float angle = state.getAngleBetweenPoints (pos.x, pos.z, nod.x, nod.z);
-//        float face = state.facingAngle;
-//
-//        if(angle > 180) {
-//          if(face > angle || face < angle - 180) {
-//            Debug.Log ("left " + angle + " " + face);
-//          } else {
-//            Debug.Log ("right " + angle + " " + face);
-//          }
-//        } else {
-//          if(face < angle || face > angle + 180) {
-//            Debug.Log ("right " + angle + " " + face);
-//          } else {
-//            Debug.Log ("left " + angle + " " + face);
-//          }
-//        }
-
 
         try {
           CarAction action = simulator.update (state);
@@ -96,7 +71,6 @@ namespace UnityStandardAssets.Vehicles.Car {
 
         if(!passedStartingGate) {
           passedStartingGate = true;
-          Debug.Log ("cancelled new node");
           return;
         }
         if(gateid - latestVisitedNode == 1) {
@@ -117,10 +91,6 @@ namespace UnityStandardAssets.Vehicles.Car {
         this.stats = stats;
       }
 
-      public int getParentScriptID() {
-        return simulator.getParentScriptID ();
-      }
-
       public float getSpeed() {
         return state.getSpeed ();
       }
@@ -133,17 +103,15 @@ namespace UnityStandardAssets.Vehicles.Car {
     }
 
     void Start() {
-      GameObject go = GameObject.Find("SocketIO");
-      socket = go.GetComponent<SocketIOComponent>();
 
       instance = this;
 
       timeText.text = "X";
       speedText.text = "X";
 
-      Track track = MainMenu.tracks [MainMenu.trackNumber];
-      string script = MainMenu.script;
-      isTrial = MainMenu.isTrial;
+      Track track = StartScreen.tracks [StartScreen.trackNumber];
+      string script = StartScreen.script;
+      isTrial = StartScreen.isTrial;
       timer = 0;
 
       if(isTrial) {
@@ -151,11 +119,10 @@ namespace UnityStandardAssets.Vehicles.Car {
         // generate car object
         stats = new RaceStats ();
         TrialRacer racer = new TrialRacer (script, track, stats);
-        parentScriptID = racer.getParentScriptID ();
         racers = new Racer[]{ racer };
       } else {
-        int noRacers = MainMenu.noRacers;
-        string secondscript = MainMenu.secondscript;
+        int noRacers = StartScreen.noRacers;
+        string secondscript = StartScreen.secondscript;
         racers = new Racer[noRacers * 2];
         for (int x = 0; x < noRacers * 2; x++) {
           racers [x] = new Racer (x, x % 2 == 0 ? script : secondscript, track);
@@ -173,15 +140,11 @@ namespace UnityStandardAssets.Vehicles.Car {
       speedText.text = string.Format ("{0:N2}", ((TrialRacer)racers [0]).getSpeed ()) + "kmh";
       if(isTrial) {
         if(racers [0].update ()) {
-          stats.time = timer;
-
-          socket.Emit ("ResultToServer"
-          //,
-          //Generate results here
-          );
+          JSONObject result = new JSONObject ();
+          result.AddField ("time", timer);
+          result.AddField ("maxSpeed", stats.maxSpeed);
+          StartScreen.socket.Emit ("finishedRun", result);
           SceneManager.LoadScene ("Start");
-
-          //SceneManager.LoadScene ("End Screen");
         }
       } else {
         for (int x = 0; x < racers.Length; x++) {

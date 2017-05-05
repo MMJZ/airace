@@ -16,20 +16,31 @@
 <body>
   <nav>
     <ul>
-      <li>∴</li>
+      <li onclick="loadPage('splash')" id="navsplash">∴</li>
       <li onclick="loadPage('marketplace')" id="navmarketplace">marketplace</li>
       <li onclick="loadPage('leaderboard')" id="navleaderboard">leaderboard</li>
       <li onclick="loadPage('editor')" id="naveditor">editor</li>
       <li onclick="loadPage('options')" id="navoptions">options</li>
       <li onclick="loadPage('results')" id="navresults">results</li>
-      <li onclick="tryRun()" id="runcont">
-        run
-      </li>
+      <li onclick="tryRun()" id="runcont">run</li>
     </ul>
   </nav>
 
+  <aside id="scriptviewcontainer"></aside>
+  
+  <main class="tabwrapper" id="splash">
+    <div class="splasher">
+      <div>
+        <p>Use the marketplace to find scripts and see how they've changed over time.</p>
+        <p>Check the leaderboard to see the fastest and most efficient scripts.</p>
+        <p>Run a new script from the editor and see its results in the Unity engine.</p>
+        <p>See the results afterwards and add your entry to the marketplace.</p>
+      </div>
+    </div>
+  </main>
+
   <main class="tabwrapper" id="marketplace">
-    <div class="chart" id="marketcont"></div>
+    <div id="chartpadding"><div id="marketcont"></div></div>
   </main>
   <main class="tabwrapper" id="leaderboard">
     <div id="leadercont"></div>
@@ -141,12 +152,14 @@ end
 
   <script>
     // Game options
-    var trackNo = 0;
-    var trackType = 0;
+    var trackNo = 9;
+    var trackType = 1;
     // Scripts
     var entries = new Map();
+    var socket;
     // Leaderboard options
     var toptentype = 1;
+    var isRunning;
 
     function loadPage(page) {
       document.getElementsByClassName("activetab")[0].className = "";
@@ -158,32 +171,32 @@ end
 
     function loadScript(ID) {
       let container = document.getElementById("scriptviewcontainer");
-      let entry = entries.get(ID);
+      let entry = entries.get(parseInt(ID));
       let script = entry.script;
       let name = entry.name;
       container.innerHTML = `
-<div class="asidecontainer"><nav>
+<div class="asidecontainer"><div>
 <h2>(${ID}) ${name}\'s Script</h2>
-<div class="jbutton" onclick="copyTweak(${ID})">tweak</div>
-</nav><pre><code>${script}</pre></code></div>`;
+<button onclick="copyTweak(${ID})">tweak</button>
+</div><pre><code>${script}</pre></code></div>`;
       container.addEventListener("click", function(e) {
         e = window.event || e;
         if (e.target === this || e.target.tagName === "aside") hideScript();
       });
       hljs.highlightBlock(container.getElementsByTagName("code")[0]);
-      container.style.display = "block";
+      container.style.display = "flex";
     }
 
     function hideScript() {
       let container = document.getElementById("scriptviewcontainer");
       container.innerHTML = "";
       container.style.display = "none";
+      
     }
 
     function copyTweak(entry) {
-      let script = entry.script;
-      // TODO clipboard
-      alert("Script copied to clipboard :D");
+      document.getElementById("scripteditor").value = entry.script;
+      loadPage("editor");
     }
 
 
@@ -195,6 +208,7 @@ end
         trackNo: trackNo,
         trackType: trackType
       };
+      console.log("trying to run");
       socket.emit('isReady');
       socket.on('readyStatus', ready => {
         if (ready) socket.emit('run', data);
@@ -209,10 +223,6 @@ end
     }
 
     function genLeaderboard(type) {
-
-      console.log(entries.size);
-      console.log(entries.values().next().value.stats.time);
-
       let cont = document.getElementById("leadercont");
       cont.innerHTML = "";
       let f;
@@ -241,7 +251,7 @@ end
           <span class="time">${(Math.floor(time / 60000)) + ":" + (Math.floor(time / 1000) % 60)}</span>
           <span class="millis">${"." + (time % 1000)}</span>
           <span class="nickname">${entry.name}</span>
-          <span class="leaderscriptbutton" onclick="loadScript(${place})">View Script</span>
+          <span class="leaderscriptbutton" onclick="loadScript(${place - 1})">View Script</span>
         </section>`;
       }
     }
@@ -264,8 +274,8 @@ end
 
     function ready() {
       //tabs
-      document.getElementById("leaderboard").className = "tabwrapper activemain";
-      document.getElementById("navleaderboard").className = "activetab";
+      document.getElementById("splash").className = "tabwrapper activemain";
+      document.getElementById("navsplash").className = "activetab";
       //marketplace
       let marketplace = JSON.parse(localStorage.marketplace);
       addToMap(-1, marketplace);
@@ -300,9 +310,9 @@ end
       }
 
       // server
-      //var socket = io('http://127.0.0.1:6565');
-      //socket.emit('isBrowser');
-      //socket.on('finishedRun', receiveResults);
+      socket = io('http://127.0.0.1:4567');
+      socket.on('finishedRun', receiveResults);
+      socket.on('requestType', () => socket.emit('isBrowser'));
     }
     ready();
   </script>

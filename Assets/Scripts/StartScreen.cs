@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using SocketIO;
 using UnityEngine.SceneManagement;
+using System;
+using System.ComponentModel;
+
 
 public class StartScreen : MonoBehaviour {
   
@@ -29,25 +32,25 @@ public class StartScreen : MonoBehaviour {
   public static int noRacers = 1;
   public static int trackNumber = 5;
   public static int trackType = 1;
+  public static string secondscript = "";
+  public static SocketIOComponent socket;
 
-  private SocketIOComponent socket;
-
-  private void StartRace(SocketIOEvent e){
-       
-    //TODO: get script, track, etc, from e.data
-    SceneManager.LoadScene ("End Screen");
+  public void Start() {
+    GameObject go = GameObject.Find ("SocketIO");
+    socket = go.GetComponent<SocketIOComponent> ();
+    socket.On ("run", StartRace);
+    socket.On ("requestType", requestType);
   }
 
-  public void Start() 
-  {
-    GameObject go = GameObject.Find("SocketIO");
-    socket = go.GetComponent<SocketIOComponent>();
+  private void requestType(SocketIOEvent e) {
+    socket.Emit ("isUnity");
+  }
 
-    socket.Emit("isUnity");
-    socket.On("run", StartRace);
-
-	}
-	 
-
-	void Update () {}
+  private void StartRace(SocketIOEvent e) {
+    Dictionary<string, string> data = e.data.ToDictionary ();
+    script = data ["script"].Replace ("\\n", Environment.NewLine);
+    trackNumber = Int32.Parse (data ["trackNo"]);
+    trackType = Int32.Parse (data ["trackType"]);
+    SceneManager.LoadScene ("Race");
+  }
 }
