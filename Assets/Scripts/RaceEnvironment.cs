@@ -8,7 +8,7 @@ namespace UnityStandardAssets.Vehicles.Car {
   public class RaceEnvironment : MonoBehaviour {
 
     public static RaceEnvironment instance;
-    public Text timeText, speedText;
+    public Text timeText, speedText, errorText;
     private Racer[] racers;
     private int timer = 0;
     private bool isTrial;
@@ -45,8 +45,7 @@ namespace UnityStandardAssets.Vehicles.Car {
           simulator = new Simulator (script);
           simulator.start (state);
         } catch (NLua.Exceptions.LuaException e) {
-          Debug.Log ("LUA ERROR");
-          Debug.Log (e.ToString ());
+          instance.ShowErrorAndQuit ("LUA ERROR: " + e.ToString ());
         }
       }
 
@@ -61,8 +60,8 @@ namespace UnityStandardAssets.Vehicles.Car {
           state.setVelocity (controller.CurrentVelocity);
           state.setFacingAngle (car.transform.eulerAngles.y);
         } catch (NLua.Exceptions.LuaException e) {
-          Debug.Log ("LUA ERROR");
-          Debug.Log (e.ToString ());
+          instance.ShowErrorAndQuit ("LUA ERROR: " + e.ToString ());
+          
         }
         return finishedRace;
       }
@@ -100,6 +99,24 @@ namespace UnityStandardAssets.Vehicles.Car {
           stats.maxSpeed = state.velocity.magnitude;
         return base.update ();
       }
+    }
+
+    protected void ShowErrorAndQuit(string s) {
+      Time.timeScale = 0;
+      errorText.text = s;
+      Quit ();
+    }
+
+    public void Quit() {
+      stats.time = timer;
+
+      socket.Emit ("ResultToServer"
+        //,
+        //Generate results here
+      );
+      SceneManager.LoadScene ("Start");
+
+      //SceneManager.LoadScene ("End Screen");
     }
 
     void Start() {
