@@ -35,12 +35,28 @@ public class CarAPI {
     turn = -1;
   }
 
-  public Vector3 getPosition() {
-    return new Vector3 (state.position.x, state.position.y, state.position.z);
+  public int getPositionX() {
+      return state.position.x;
   }
 
-  public Vector3 getVelocity() {
-    return new Vector3 (state.velocity.x, state.velocity.y, state.velocity.z);
+  // public int getPositionY() {
+  //     return state.position.y;
+  // }
+
+  public int getPositionZ() {
+      return state.position.Z;
+  }
+
+  public int getVelocityX() {
+      return state.velocity.x * 3.5f;
+  }
+
+  // public int getVelocityY() {
+  //     return state.velocity.y * 3.5f;
+  // }
+
+  public int getVelocityZ() {
+      return state.velocity.z * 3.5f;
   }
 
   public float getSpeed() {
@@ -59,8 +75,16 @@ public class CarAPI {
     return state.facingAngle;
   }
 
-  public Node getNextNode() {
-    return state.nextNode.clone ();
+  public Node lastNode() {
+      return state.lastNode.clone();
+  }
+
+  public Node nextNode() {
+      return state.nextNode.clone();
+  }
+
+  public Node nodeAfter() {
+      return state.nodeAfter.clone();
   }
 
   public float getDistanceToLeftSide() {
