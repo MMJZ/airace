@@ -27,7 +27,7 @@
   </nav>
 
   <aside id="scriptviewcontainer"></aside>
-  
+
   <main class="tabwrapper" id="splash">
     <div class="splasher">
       <div>
@@ -51,7 +51,8 @@
       <div>
         <section id="language">
           <h2>Language</h2>
-          <p>Lua is the scripting language you should write scripts in. Details about Lua syntax can be found with a quick google.</p>
+          <p>Lua is the scripting language you should write your scripts in.</p>
+          <p>Details about Lua syntax and documentation can be found <a href="https://www.lua.org/docs.html">here</a></p>
         </section>
         <section id="events">
           <h2>Events</h2>
@@ -62,37 +63,37 @@
         </section>
         <section id="carinfo">
           <h2>Car Info</h2>
-          <p>Use the<code class="function inlinefunction">car</code>object to get information about the car.</p>
-          <p><code class="function">car:getPosition().x</code>The X coordinate of the car's position.</p>
-          <p><code class="function">car:getPosition().z</code>The Z coordinate of the car's position.</p>
-          <p><code class="function">car:getVelocity().x</code>The X coordinate of the car's velocity.</p>
-          <p><code class="function">car:getVelocity().z</code>The Z coordinate of the car's velocity.</p>
-          <p><code class="function">car:getSpeed()</code>The car's overall speed.</p>
+          <p>Use the<code class="function inlinefunction">car</code>object to get information about the car:</p>
+          <p><code class="function">car:getPositionX()</code>The X coordinate of the car's position.</p>
+          <p><code class="function">car:getPositionZ()</code>The Z coordinate of the car's position.</p>
+          <p><code class="function">car:getVelocityX()</code>The X coordinate of the car's velocity.</p>
+          <p><code class="function">car:getVelocityZ()</code>The Z coordinate of the car's velocity.</p>
+          <p><code class="function">car:getSpeed()</code>The car's overall speed (in kilometres per hour).</p>
           <p><code class="function">car:getTurnAngle()</code>The angle at which the car is currently turning.</p>
           <p><code class="function">car:getFacingAngle()</code>The direction in which the car is facing.</p>
-          <p><code class="function">car:getDistanceToLeftSide()</code>The distance to the nearest wall on the left side.</p>
-          <p><code class="function">car:getDistanceToRightSide()</code>The distance to the nearest wall on the right side.</p>
+          <p><code class="function">car:getDistanceToLeftSide()</code>The distance to nearest wall on the left side.</p>
+          <p><code class="function">car:getDistanceToRightSide()</code>The distance to nearest wall on the right side.</p>
         </section>
         <section id="track">
           <h2>Track Info</h2>
           <p>A track is represented as a sequence of nodes.</p>
-          <p>Use the<code class="function inlinefunction">car</code>object to get information about the nodes closest to it on the track.</p>
-          <p><code class="function">car:lastNode()</code>The last node the car passed through</p>
+          <p>Use the<code class="function inlinefunction">car</code>object to get information about the nodes closest to it on the track:</p>
+          <p><code class="function">car:lastNode()</code>The previous node the car passed through</p>
           <p><code class="function">car:nextNode()</code>The next node the car must pass through.</p>
           <p><code class="function">car:nodeAfter()</code>The node the car must pass through after passing the next node.</p>
-          <p>Each <code class="function">node</code>has useful information about the track at that point.</p>
-          <p><code class="function">node.position</code>The position of the node. This will always be in the centre of the track.</p>
+          <p>Each <code class="function">node</code>object has useful information about the track at that point:</p>
+          <p><code class="function">node.position</code>The position of the node (will always be in the centre of the track)</p>
           <p><code class="function">node.leftSide</code>The position of the point on the left wall nearest this node.</p>
-          <p><code class="function">node.rightSide</code>The position of the point on the right wall nearest this node. The position, left side and right side will always lie on the same line.</p>
-          <p><code class="function">node.width</code>The distance between the position and the two side points. Equal to half the total track width at that node.</p>
+          <p><code class="function">node.rightSide</code>The position of the point on the right wall nearest this node. Note that the position, left side and right side will always lie on the same line.</p>
+          <p><code class="function">node.width</code>The distance between the position and the two side points. This is equal to half the total track width of the node.</p>
         </section>
         <section id="actions">
           <h2>Actions</h2>
           <p>Use the<code class="function inlinefunction">car</code>object to manipulate the car.</p>
-          <p><code class="function">car:accelerate()</code>The X coordinate of the car's position.</p>
-          <p><code class="function">car:decelerate()</code>The Z coordinate of the car's position.</p>
-          <p><code class="function">car:turnLeft()</code>The X coordinate of the car's position.</p>
-          <p><code class="function">car:turnRight()</code>The Z coordinate of the car's position.</p>
+          <p><code class="function">car:accelerate()</code>Accelerate the car.</p>
+          <p><code class="function">car:decelerate()</code>Decelerate the car.</p>
+          <p><code class="function">car:turnLeft()</code>Turn the car left.</p>
+          <p><code class="function">car:turnRight()</code>Turn the car right.</p>
           <span class="precaption">Example:</span>
           <pre class="examplecode"><code>
 function update()
@@ -228,7 +229,7 @@ end</textarea>
       let container = document.getElementById("scriptviewcontainer");
       container.innerHTML = "";
       container.style.display = "none";
-      
+
     }
 
     function copyTweak(ID) {
