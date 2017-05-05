@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Reflection;
 
 public class TrackRenderer : MonoBehaviour {
 
@@ -132,6 +133,48 @@ public class TrackRenderer : MonoBehaviour {
           po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
           po.transform.position = n1.rightSide + new Vector3 (0, -0.5f, 0);
           po.GetComponent<Renderer> ().material.color = blue;
+        }
+        break;
+      case 2:
+        Color white = new Color (0.6f, 1, 0.6f);
+        for (int x = 0; x < track.nodes.Length; x++) {
+          Node n1 = track.nodes [x];
+          Node n2 = track.nodes [(x + 1) % track.nodes.Length];
+          Vector3 dl = n2.leftSide - n1.leftSide;
+          GameObject lc = GameObject.CreatePrimitive (PrimitiveType.Cube);
+          lc.transform.localScale += new Vector3 (dl.magnitude - 1, 0, 0);
+          lc.transform.position = n1.leftSide + (dl / 2.0f);
+          lc.transform.LookAt (n2.leftSide);
+          lc.transform.Rotate (0, 90, 0);
+          lc.transform.position += new Vector3 (0, -0.499f, 0);
+          lc.GetComponent<Renderer> ().material.color = white;
+
+          Destroy (lc.GetComponent <BoxCollider> ());
+
+          GameObject po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
+          po.transform.position = n1.leftSide + new Vector3 (0, -0.5f, 0);
+          po.GetComponent<Renderer> ().material.color = white;
+
+          po.transform.localScale += new Vector3 (0, 5, 0);
+
+          Vector3 dr = n2.rightSide - n1.rightSide;
+          lc = GameObject.CreatePrimitive (PrimitiveType.Cube);
+          lc.transform.localScale += new Vector3 (dr.magnitude - 1, 0, 0);
+          lc.transform.position = n1.rightSide + (dr / 2.0f);
+          lc.transform.LookAt (n2.rightSide);
+          lc.transform.Rotate (0, 90, 0);
+          lc.transform.position += new Vector3 (0, -0.499f, 0);
+          lc.GetComponent<Renderer> ().material.color = white;
+
+
+          Destroy (lc.GetComponent <BoxCollider> ());
+
+          po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
+          po.transform.position = n1.rightSide + new Vector3 (0, -0.5f, 0);
+          po.GetComponent<Renderer> ().material.color = white;
+
+          po.transform.localScale += new Vector3 (0, 5, 0);
+
         }
         break;
     }

@@ -3,6 +3,7 @@ using System;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using SocketIO;
+using System.Threading;
 
 namespace UnityStandardAssets.Vehicles.Car {
   public class RaceEnvironment : MonoBehaviour {
@@ -11,7 +12,7 @@ namespace UnityStandardAssets.Vehicles.Car {
     public Text timeText, speedText, errorText;
     private Racer[] racers;
     private int timer = 0;
-    private bool isTrial;
+    private bool isTrial, sentResult;
     public static int parentScriptID;
     public static RaceStats stats;
 
@@ -50,7 +51,6 @@ namespace UnityStandardAssets.Vehicles.Car {
       }
 
       public virtual bool update() {
-
         try {
           CarAction action = simulator.update (state);
           controller.Move (controller.CurrentSteerAngle / 20 + action.turn * 0.05f, action.accel, 0, 0);
@@ -61,7 +61,6 @@ namespace UnityStandardAssets.Vehicles.Car {
           state.setFacingAngle (car.transform.eulerAngles.y);
         } catch (NLua.Exceptions.LuaException e) {
           instance.ShowErrorAndQuit ("LUA ERROR: " + e.ToString ());
-          
         }
         return finishedRace;
       }
@@ -73,12 +72,13 @@ namespace UnityStandardAssets.Vehicles.Car {
           return;
         }
         if(gateid - latestVisitedNode == 1) {
-          latestVisitedNode += 1;
-          if(latestVisitedNode == 0 && passedStartingGate) {
-            finishedRace = true;
-          }
+          latestVisitedNode = gateid;
+        }
+        if(gateid == 0 && latestVisitedNode == track.nodes.Length - 1) {
+          finishedRace = true;
         }
         lastNode = gateid;
+        Debug.Log ("passed " + passedStartingGate + " latest " + latestVisitedNode);
         state.newSegment (track, lastNode);
       }
     }
@@ -104,25 +104,17 @@ namespace UnityStandardAssets.Vehicles.Car {
     protected void ShowErrorAndQuit(string s) {
       Time.timeScale = 0;
       errorText.text = s;
-      Quit ();
-    }
-
-    public void Quit() {
-      stats.time = timer;
-
-      socket.Emit ("ResultToServer"
-        //,
-        //Generate results here
-      );
+      JSONObject result = new JSONObject ();
+      result.AddField ("time", -1);
+      result.AddField ("error", s);
+      StartScreen.socket.Emit ("finishedRun", result);
       SceneManager.LoadScene ("Start");
-
-      //SceneManager.LoadScene ("End Screen");
     }
 
     void Start() {
 
       instance = this;
-
+      sentResult = false;
       timeText.text = "X";
       speedText.text = "X";
 
@@ -132,7 +124,6 @@ namespace UnityStandardAssets.Vehicles.Car {
       timer = 0;
 
       if(isTrial) {
-
         // generate car object
         stats = new RaceStats ();
         TrialRacer racer = new TrialRacer (script, track, stats);
@@ -157,6 +148,8 @@ namespace UnityStandardAssets.Vehicles.Car {
       speedText.text = string.Format ("{0:N2}", ((TrialRacer)racers [0]).getSpeed ()) + "kmh";
       if(isTrial) {
         if(racers [0].update ()) {
+          if(sentResult)
+            return;
           JSONObject result = new JSONObject ();
           result.AddField ("time", timer);
           result.AddField ("maxSpeed", stats.maxSpeed);

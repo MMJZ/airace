@@ -51,7 +51,6 @@ public class GameState {
     nextNode = track.nodes [(newLast + 1) % track.nodes.Length];
     nodeAfter = track.nodes [(newLast + 2) % track.nodes.Length];
     enteredNewSegment = true;
-    Debug.Log ("new node");
   }
 
   public float getDistanceToLeftSide() {

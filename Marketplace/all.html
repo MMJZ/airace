@@ -40,7 +40,9 @@
   </main>
 
   <main class="tabwrapper" id="marketplace">
-    <div id="chartpadding"><div id="marketcont"></div></div>
+    <div id="chartpadding">
+      <div id="marketcont"></div>
+    </div>
   </main>
   <main class="tabwrapper" id="leaderboard">
     <div id="leadercont"></div>
@@ -114,9 +116,8 @@ function Update()
   else
     lim = spedlim - 2
   end
-  local pos = car:getPosition()
-  local nod = car:getNextNode().position
-  local angle = car:getAngleBetweenPoints(pos.x, pos.z, nod.x, nod.z)
+  local nod = car:nextNode().position
+  local angle = car:getAngleBetweenPoints(car:getPositionX(), car:getPositionZ(), nod.x, nod.z)
   local face = car:getFacingAngle()
   if math.abs(angle - face) < 10 then
     if car:getTurnAngle() > 0.4 then
@@ -146,9 +147,25 @@ end</textarea>
     </div>
   </main>
 
-  <main class="tabwrapper" id="options"></main>
+  <main class="tabwrapper" id="options">
 
-  <main class="tabwrapper" id="results"></main>
+    <div class="splasher">
+      <div>
+        <p>site in construction lol</p>
+      </div>
+    </div>
+
+  </main>
+
+  <main class="tabwrapper" id="results">
+
+    <div class="splasher">
+      <div id="resultsholder">
+
+      </div>
+    </div>
+
+  </main>
 
 
   <script>
@@ -185,6 +202,7 @@ end</textarea>
         }
       ]
     });
+
   </script>
 
 
@@ -198,6 +216,8 @@ end</textarea>
     // Leaderboard options
     var toptentype = 1;
     var isRunning = false;
+    var tweakedScriptID = 0;
+    var dataInTesting;
 
     function loadPage(page) {
       document.getElementsByClassName("activetab")[0].className = "";
@@ -233,14 +253,13 @@ end</textarea>
     }
 
     function copyTweak(ID) {
+      tweakedScriptID = ID;
       document.getElementById("scripteditor").value = entries.get(parseInt(ID)).script;
       loadPage("editor");
     }
 
-
-
     function tryRun() {
-      if(isRunning) return;
+      if (isRunning) return;
       isRunning = true;
       let scripttext = document.getElementById("scripteditor").value;
       let data = {
@@ -248,6 +267,12 @@ end</textarea>
         trackNo: trackNo,
         trackType: trackType
       };
+      dataInTesting = {
+        script: scripttext,
+        parentID: tweakedScriptID,
+        trackNo: trackNo,
+        trackType: trackType
+      }
       console.log("trying to run");
       socket.emit('isReady');
       socket.on('readyStatus', ready => {
@@ -261,7 +286,32 @@ end</textarea>
     function receiveResults(data) {
       isRunning = false;
       console.log(data);
-      //alert(data); //TODO populate results page
+      let cont = document.getElementById("resultsholder");
+      cont.innerHTML = `
+<p>Time: ${data.time}</p>
+<p>Max Speed: ${data.maxSpeed}</p>
+<p>Error: ${data.error}</p>
+<button onclick="addEntryToMarketplace()">Add To Marketplace</button>
+        `;
+    }
+
+    function addEntryToMarketplace() {
+      let data = dataInTesting;
+      let oldlocal = JSON.parse(localStorage.marketplace);
+      let woo = findNode(oldlocal);
+      woo.children.push({
+        text: {
+          name: "b",
+          desc: 0
+        },
+        stats: {
+          time: 0
+        },
+      });
+    }
+
+    function findNode(from) {
+
     }
 
     function genLeaderboard(type) {
@@ -357,6 +407,7 @@ end</textarea>
       socket.on('requestType', () => socket.emit('isBrowser'));
     }
     ready();
+
   </script>
 
 </body>

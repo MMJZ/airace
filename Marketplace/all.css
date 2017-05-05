@@ -13,24 +13,42 @@ body {
 nav {
   width: 100%;
   position: fixed;
-  background: rgb(47, 42, 34);
+  background: rgba(0,0,0,0.5);
   color: white;
   font-weight: 300;
   font-size: 1.5em;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 0 10px black;
 }
 
 nav li {
   display: inline-block;
   padding: 15px 30px;
+  cursor: pointer;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+nav li:hover {
+  background-color: rgba(255,255,255,0.7);
+  color: black;
 }
 
 #runcont {
   float: right;
-  background-color: grey;
+  background-color: rgba(100,200,255, 0.7);
+  border-bottom-left-radius: 5px;
+  border-top-right-radius: 0px;
+  padding: 15px 70px;
+}
+
+#runcont:hover {
+  background-color: white;
 }
 
 .activetab {
-  background-color: black;
+  background-color: rgba(255,255,255,0.7);
+  color: black;
 }
 
 .tabwrapper {
