@@ -103,7 +103,44 @@ end
         </section>
       </div>
       <div>
-        <textarea id="scripteditor">asd</textarea>
+        <textarea id="scripteditor">spedlim = 23
+lim = 0
+function Update()
+
+  if car:getSpeed() < lim then
+    lim = spedlim
+    car:accelerate()
+  else
+    lim = spedlim - 2
+  end
+  local pos = car:getPosition()
+  local nod = car:getNextNode().position
+  local angle = car:getAngleBetweenPoints(pos.x, pos.z, nod.x, nod.z)
+  local face = car:getFacingAngle()
+  if math.abs(angle - face) < 10 then
+    if car:getTurnAngle() > 0.4 then
+      car:turnLeft()
+    elseif car:getTurnAngle() < -0.4 then
+      car:turnRight()
+    else
+      if car:getSpeed() < 80 and car:getDistanceToNextNode() > 60 then
+        car:accelerate()
+      end
+    end
+  elseif angle > 180 then
+    if face > angle or face < angle - 180 then
+      car:turnLeft()
+    else
+      car:turnRight()
+    end
+  else
+    if face < angle or face > angle + 180 then
+      car:turnRight()
+    else
+      car:turnLeft()
+    end
+  end
+end</textarea>
       </div>
     </div>
   </main>
@@ -152,14 +189,14 @@ end
 
   <script>
     // Game options
-    var trackNo = 9;
-    var trackType = 1;
+    var trackNo = 2;
+    var trackType = 2;
     // Scripts
     var entries = new Map();
     var socket;
     // Leaderboard options
     var toptentype = 1;
-    var isRunning;
+    var isRunning = false;
 
     function loadPage(page) {
       document.getElementsByClassName("activetab")[0].className = "";
@@ -194,14 +231,16 @@ end
       
     }
 
-    function copyTweak(entry) {
-      document.getElementById("scripteditor").value = entry.script;
+    function copyTweak(ID) {
+      document.getElementById("scripteditor").value = entries.get(parseInt(ID)).script;
       loadPage("editor");
     }
 
 
 
     function tryRun() {
+      if(isRunning) return;
+      isRunning = true;
       let scripttext = document.getElementById("scripteditor").value;
       let data = {
         script: scripttext,
@@ -219,7 +258,9 @@ end
     }
 
     function receiveResults(data) {
-      alert(data); //TODO populate results page
+      isRunning = false;
+      console.log(data);
+      //alert(data); //TODO populate results page
     }
 
     function genLeaderboard(type) {
