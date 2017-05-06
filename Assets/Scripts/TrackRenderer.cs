@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection;
+using System;
 
 public class TrackRenderer : MonoBehaviour {
 
+  public Transform tree1, tree2, tree3, tree4;
+   
   void Awake() {
 
     Track track = StartScreen.tracks [StartScreen.trackNumber];
@@ -27,7 +30,7 @@ public class TrackRenderer : MonoBehaviour {
 
       // */
     }
-
+	
     switch (StartScreen.trackType) {
       case 0:
         for (int i = 0; i < track.nodes.Length; i += 1) {
@@ -98,6 +101,10 @@ public class TrackRenderer : MonoBehaviour {
               cube.tag = "rightside";
             }
           }
+		  
+		  putTree(left, left1); 
+		  putTree(right, right1);
+		  
         }
         break;
       case 1:
@@ -112,11 +119,11 @@ public class TrackRenderer : MonoBehaviour {
           lc.transform.LookAt (n2.leftSide);
           lc.transform.Rotate (0, 90, 0);
           lc.GetComponent<Renderer> ().material.color = blue;
-
-          Destroy (lc.GetComponent <BoxCollider> ());
-
-          GameObject po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
+		  
+		  Destroy (lc.GetComponent <BoxCollider> ());		          
+		  GameObject po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
           po.transform.position = n1.leftSide + new Vector3 (0, -0.5f, 0);
+		  Instantiate(tree1, n1.leftSide+new Vector3(-1,0,0), Quaternion.identity);
           po.GetComponent<Renderer> ().material.color = blue;
 
           Vector3 dr = n2.rightSide - n1.rightSide;
@@ -127,12 +134,14 @@ public class TrackRenderer : MonoBehaviour {
           lc.transform.Rotate (0, 90, 0);
           lc.GetComponent<Renderer> ().material.color = blue;
 
-
           Destroy (lc.GetComponent <BoxCollider> ());
 
           po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
           po.transform.position = n1.rightSide + new Vector3 (0, -0.5f, 0);
-          po.GetComponent<Renderer> ().material.color = blue;
+          po.GetComponent<Renderer> ().material.color = blue; 
+		  
+		  putTree(n1.leftSide, n2.leftSide); 
+		  putTree(n1.rightSide, n2.rightSide);
         }
         break;
       case 2:
@@ -174,9 +183,27 @@ public class TrackRenderer : MonoBehaviour {
           po.GetComponent<Renderer> ().material.color = white;
 
           po.transform.localScale += new Vector3 (0, 5, 0);
-
+		  
+		  putTree(n1.leftSide, n2.leftSide); 
+		  putTree(n1.rightSide, n2.rightSide);
+		  
         }
         break;
-    }
+    }    
   }
+  
+  private void putTree(Vector3 a, Vector3 b) {
+	Vector3 c = (a+b)/2;
+    if ((a-b).magnitude>8) {
+	    int ttype = UnityEngine.Random.Range(1,5);
+		switch (ttype) {
+		 case 1: Instantiate(tree1, c, Quaternion.identity); break;
+		 case 2: Instantiate(tree2, c, Quaternion.identity); break;
+		 case 3: Instantiate(tree3, c, Quaternion.identity); break;
+		 case 4: Instantiate(tree4, c, Quaternion.identity); break;
+	    }
+		putTree(a,c); putTree(c,b);
+	}
+  }
+  
 }
