@@ -6,10 +6,29 @@
   <link href="https://fonts.googleapis.com/css?family=Montserrat:300|Source+Code+Pro:300" rel="stylesheet">
   <link rel="stylesheet" href="all.css">
   <link rel="stylesheet" href="/hlua/highlight.css">
+  <link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
+
   <script src="hlua/highlight.pack.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+  <script src="http://codemirror.net/lib/codemirror.js"></script>
+  <script src="http://codemirror.net/mode/lua/lua.js"></script>
+  <script src="http://codemirror.net/addon/edit/matchbrackets.js"></script>
+  <script src="http://codemirror.net/addon/edit/continuecomment.js"></script>
+
+  <script language="javascript">
+
+    window.onload = function () {
+
+        var editor = CodeMirror.fromTextArea(document.getElementById('scripteditor'), {
+            mode: "lua",
+            theme: "default",
+            lineNumbers: false
+        });
+    };
+
+  </script>
 
 </head>
 
@@ -20,6 +39,7 @@
       <li onclick="loadPage('marketplace')" id="navmarketplace">marketplace</li>
       <li onclick="loadPage('leaderboard')" id="navleaderboard">leaderboard</li>
       <li onclick="loadPage('editor')" id="naveditor">editor</li>
+      <li onclick="loadPage('docs')" id="navdocs">docs</li>
       <li onclick="loadPage('options')" id="navoptions">options</li>
       <li onclick="loadPage('results')" id="navresults">results</li>
       <li onclick="tryRun()" id="runcont">run</li>
@@ -48,9 +68,8 @@
     <div id="leadercont"></div>
   </main>
 
-  <main class="tabwrapper" id="editor">
-    <div class="splitter">
-      <div>
+  <main class="tabwrapper" id="docs">
+    <div class="docs">
         <section id="language">
           <h2>Language</h2>
           <p>Lua is the scripting language you should write your scripts in.</p>
@@ -104,8 +123,11 @@ function update()
 end
             </code></pre>
         </section>
-      </div>
-      <div>
+    </div>
+  </main>
+
+  <main class="tabwrapper" id="editor">
+      <div class="editor">
         <textarea id="scripteditor">spedlim = 23
 lim = 0
 function Update()
@@ -144,7 +166,6 @@ function Update()
   end
 end</textarea>
       </div>
-    </div>
   </main>
 
   <main class="tabwrapper" id="options">

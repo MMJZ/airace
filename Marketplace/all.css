@@ -203,7 +203,17 @@ aside pre {
   font-weight: 300;
 }
 
-/* editor */
+/* editor, docs */
+
+.docs {
+    padding-top: 100px;
+}
+
+.editor {
+    padding-top: 100px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
 
 .splitter {
   display: flex;
@@ -272,6 +282,7 @@ section p {
 }
 
 .examplecode {
+  color: white;
   display: inline-block;
   box-shadow: 0 0 5px rgb(255, 200, 150) inset;
   background-color: rgba(0, 0, 0, 0.8);
