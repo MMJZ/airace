@@ -7,6 +7,8 @@ using System;
 public class TrackRenderer : MonoBehaviour {
 
   public Transform tree1, tree2, tree3, tree4;
+  public Transform building1, building2, building3, building4;
+  public Transform butterfly;
    
   void Awake() {
 
@@ -101,10 +103,14 @@ public class TrackRenderer : MonoBehaviour {
               cube.tag = "rightside";
             }
           }
-		  
-		  putTree(left, left1); 
-		  putTree(right, right1);
-		  
+		 
+		 //Use in case of "fillBuilding":
+		 // Vector3 dl = left-left1;
+		 // float angle = (float)((Math.Atan((dl.z)/(dl.x))*180/Math.PI));
+		 
+		  fillTree(left, left1); 
+		  fillTree(right, right1);
+		  if (i%6 == 0) {Instantiate(butterfly);}
         }
         break;
       case 1:
@@ -123,7 +129,6 @@ public class TrackRenderer : MonoBehaviour {
 		  Destroy (lc.GetComponent <BoxCollider> ());		          
 		  GameObject po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
           po.transform.position = n1.leftSide + new Vector3 (0, -0.5f, 0);
-		  Instantiate(tree1, n1.leftSide+new Vector3(-1,0,0), Quaternion.identity);
           po.GetComponent<Renderer> ().material.color = blue;
 
           Vector3 dr = n2.rightSide - n1.rightSide;
@@ -140,8 +145,11 @@ public class TrackRenderer : MonoBehaviour {
           po.transform.position = n1.rightSide + new Vector3 (0, -0.5f, 0);
           po.GetComponent<Renderer> ().material.color = blue; 
 		  
-		  putTree(n1.leftSide, n2.leftSide); 
-		  putTree(n1.rightSide, n2.rightSide);
+		  float angle = (float)((Math.Atan((dl.z)/(dl.x))*180/Math.PI));
+		  fillAny(n1.leftSide, n2.leftSide, angle); 
+		  fillAny(n1.rightSide, n2.rightSide, angle);
+		  if (x%6 == 0) {Instantiate(butterfly);}
+		  
         }
         break;
       case 2:
@@ -184,25 +192,60 @@ public class TrackRenderer : MonoBehaviour {
 
           po.transform.localScale += new Vector3 (0, 5, 0);
 		  
-		  putTree(n1.leftSide, n2.leftSide); 
-		  putTree(n1.rightSide, n2.rightSide);
-		  
         }
         break;
     }    
   }
   
-  private void putTree(Vector3 a, Vector3 b) {
+  private void fillTree(Vector3 a, Vector3 b) {
 	Vector3 c = (a+b)/2;
     if ((a-b).magnitude>8) {
-	    int ttype = UnityEngine.Random.Range(1,5);
-		switch (ttype) {
+	    putTree(c);
+		fillTree(a,c); fillTree(c,b);
+	}
+  }
+  
+  private void fillBuilding(Vector3 a, Vector3 b, float angle) {
+	Vector3 c = (a+b)/2;
+    if ((a-b).magnitude>8) {
+		putBuilding(c, angle);
+		fillBuilding(a,c, angle); fillBuilding(c,b, angle);
+	}
+  }
+  
+  private void fillAny(Vector3 a, Vector3 b, float angle) {
+	Vector3 c = (a+b)/2;
+    if ((a-b).magnitude>8) {
+		putAny(c, angle);
+		fillAny(a,c, angle); fillAny(c,b, angle);
+	}
+  }
+  
+  private void putTree(Vector3 c) {
+	int ttype = UnityEngine.Random.Range(1,5);
+	switch (ttype) {
 		 case 1: Instantiate(tree1, c, Quaternion.identity); break;
 		 case 2: Instantiate(tree2, c, Quaternion.identity); break;
 		 case 3: Instantiate(tree3, c, Quaternion.identity); break;
 		 case 4: Instantiate(tree4, c, Quaternion.identity); break;
-	    }
-		putTree(a,c); putTree(c,b);
+	}
+  }
+  
+  private void putBuilding(Vector3 c, float angle) {
+	int btype = UnityEngine.Random.Range(1,5);
+	switch (btype) {
+		 case 1: Instantiate(building1, c, Quaternion.Euler(0,-angle,0)); break;
+		 case 2: Instantiate(building2, c, Quaternion.Euler(0,-angle,0)); break;
+		 case 3: Instantiate(building3, c, Quaternion.Euler(0,-angle,0)); break;
+		 case 4: Instantiate(building4, c, Quaternion.Euler(0,-angle,0)); break;
+	}
+  }
+  
+  private void putAny(Vector3 c, float angle) {
+	int bt = UnityEngine.Random.Range(1,3);
+	switch (bt) {
+		case 1: putTree(c); break;
+		case 2: putBuilding(c, angle); break;
 	}
   }
   
