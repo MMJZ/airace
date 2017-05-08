@@ -159,15 +159,6 @@ public class TrackRenderer : MonoBehaviour {
 		  fillAny(newL1,newL2,angle);
 		  fillAny(newR1, newR2, angle);
 
-		//  Vector3 adjust = new Vector3(250*(float)(Math.PI*Math.Sin(angle))/180, 0, 250*(float)(Math.PI*Math.Cos(angle))/180);
-		//  Vector3 newL1 = n1.leftSide + adjust;
-		//  Vector3 newL2 = n2.leftSide +adjust;
-		//  Vector3 newR1 = n1.rightSide - adjust;
-		//  Vector3 newR2 = n2.rightSide - adjust;
-		//  fillAny(newL1,newL2,angle);
-		//  fillAny(newR1, newR2, angle);
-		//  fillAny(n1.leftSide, n2.leftSide, angle);
-		//  fillAny(n1.rightSide, n2.rightSide, angle);
 		  if (x%6 == 0) {Instantiate(butterfly);}
 
         }
