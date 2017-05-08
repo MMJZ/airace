@@ -191,57 +191,12 @@ function Update()
     </div>
   </main>
   <main class="tabwrapper" id="results">
-
     <div class="splasher">
       <div id="resultsholder">
         <p>Run a race to see results...</p>
       </div>
     </div>
-
   </main>
-  <script>
-    localStorage.marketplace = JSON.stringify({
-      text: {
-        name: "b",
-        desc: 0
-      },
-      stats: {
-        time: 0
-      },
-      script: "a",
-      children: [{
-          text: {
-            name: "asdd",
-            desc: 1
-          },
-          stats: {
-            time: 2000
-          },
-          script: "a",
-          children: [],
-          trackNumber: 2,
-          trackType: 2
-        },
-        {
-          text: {
-            name: "asd",
-            desc: 2
-          },
-          stats: {
-            time: 1000
-          },
-          script: "a",
-          children: [],
-
-          trackNumber: 2,
-          trackType: 2
-        }
-      ],
-      trackNumber: 2,
-      trackType: 2
-    });
-
-  </script>
   <script>
     var notifiedDeadServer = false;
     var entries = new Map();
@@ -261,13 +216,7 @@ function Update()
       document.getElementById("nav" + page).className = "activetab";
       document.getElementById(page).className = "tabwrapper activemain";
       if (page === "leaderboard") genLeaderboard();
-      if (page === "editor") {
-        codemirror = CodeMirror.fromTextArea(document.getElementById('scripteditor'), {
-          mode: "lua",
-          theme: "default",
-          lineNumbers: false
-        });
-      }
+      if (page === "marketplace") colourMarketplace();
     }
 
     function loadScript(ID) {
@@ -297,14 +246,14 @@ function Update()
 
     function copyTweak(ID) {
       tweakedScriptID = ID;
-      document.getElementById("scripteditor").value = entries.get(parseInt(ID)).script;
       loadPage("editor");
+      codemirror.getDoc().setValue(entries.get(parseInt(ID)).script);
     }
 
     function tryRun() {
       if (isRunning) return;
       isRunning = true;
-      let scripttext = document.getElementById("scripteditor").value;
+      let scripttext = codemirror.getDoc().getValue();
       let name = document.getElementById("nameeditor").value;
       if (name === "Your name") name = "Player";
       let data = {
@@ -341,12 +290,19 @@ function Update()
         maxSpeed: data.maxSpeed
       }
       // remove button if error
-      cont.innerHTML = `
+      if (data.error) {
+        cont.innerHTML = `
+<p>The script encountered an error:</p>
+<p>${data.error}</p>
+`;
+      } else {
+        cont.innerHTML = `
 <p>Time: ${data.time}</p>
 <p>Max Speed: ${data.maxSpeed}</p>
-<p>Error: ${data.error}</p>
-<button onclick="addEntryToMarketplace()">Add To Marketplace</button>
+<button onclick="addEntryToMarketplace()" id="addbutton">Add To Marketplace</button>
         `;
+      }
+
       loadPage("results");
     }
 
@@ -354,6 +310,9 @@ function Update()
       let data = dataInTesting;
       let oldlocal = JSON.parse(localStorage.marketplace);
       let woo = findNode(oldlocal, data.parentID);
+      console.log(oldlocal);
+      console.log(data.parentID);
+      console.log(woo);
       let newentry = {
         text: {
           name: data.name,
@@ -373,11 +332,18 @@ function Update()
     }
 
     function findNode(from, ID) {
-      if (from.ID === ID) return from;
-      for (let node in from.children) {
+      
+      console.log("finding from");
+      console.log(from);
+      
+      console.log("looking for ID " + ID);
+      
+      if (from.text.desc == ID) return from;
+      for (let node of from.children) {
         let res = findNode(node, ID);
         if (res) return res;
       }
+      return undefined;
     }
 
     function genLeaderboard() {
@@ -414,6 +380,25 @@ function Update()
         </section>`;
       }
     }
+    
+    function colourMarketplace(){
+      let min = 99999999999;
+      let max = 0;
+      for(let x of document.getElementsByClassName("node")){
+        let id = parseInt(x.getElementsByClassName("node-desc")[0].innerHTML);
+        let time = entries.get(id).stats.time;
+        if(time < min) min = time;
+        if(time > max) max = time;
+      }
+      max -= min;
+      for(let x of document.getElementsByClassName("node")){
+        let id = parseInt(x.getElementsByClassName("node-desc")[0].innerHTML);
+        let time = entries.get(id).stats.time - min;
+        let rgb = 245 * time / max + 5;
+        console.log(rgb);
+        x.style.backgroundColor = `rgb(${rgb},${rgb},${rgb})`;
+      }
+    }
 
     function addToMap(parentID, entry) {
       if (parseInt(entry.text.desc) >= newID) {
@@ -445,7 +430,8 @@ function Update()
           siblingSeparation: 170,
           subTeeSeparation: 20,
           padding: 50,
-          nodeAlign: "BOTTOM",
+          nodeAlign: "CENTER",
+          rootOrientation: "WEST",
           node: {
             HTMLclass: "marketplacetree"
           },
@@ -494,6 +480,12 @@ function Update()
       addToMap(-1, JSON.parse(localStorage.marketplace));
       highlightOptions();
       loadTree();
+
+      codemirror = CodeMirror.fromTextArea(document.getElementById('scripteditor'), {
+        mode: "lua",
+        theme: "default",
+        lineNumbers: false
+      });
       socket = io('http://127.0.0.1:4567');
       socket.on('finishedRun', receiveResults);
       socket.on('requestType', () => socket.emit('isBrowser'));
@@ -503,6 +495,7 @@ function Update()
           notifiedDeadServer = true;
         }
       });
+
     }
     ready();
 
