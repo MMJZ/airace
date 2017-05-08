@@ -65,7 +65,7 @@
         <section id="language">
           <h2>Language</h2>
           <p>Lua is the scripting language you should write your scripts in.</p>
-          <p>Details about Lua syntax and documentation can be found <a href="https://www.lua.org/docs.html">here</a></p>
+          <p>Details about Lua syntax and documentation can be found <a href="https://www.lua.org/docs.html">here</a>.</p>
         </section>
         <section id="events">
           <h2>Events</h2>
@@ -94,6 +94,9 @@
           <p><code class="function">car:lastNode()</code>The previous node the car passed through</p>
           <p><code class="function">car:nextNode()</code>The next node the car must pass through.</p>
           <p><code class="function">car:nodeAfter()</code>The node the car must pass through after passing the next node.</p>
+          <p><code class="function">car:getAngleBetweenPoints()</code>The distance between two point coordinates.</p>
+          <p><code class="function">car:getAngleToNextNode()</code>The angle to the next node on the track.</p>
+          <p><code class="function">car:getDistanceToNextNode()</code>The distance to the next node on the track.</p>
           <p>Each <code class="function inlinefunction">node</code>object has useful information about the track at that point:</p>
           <p><code class="function">node.position</code>The position of the node (will always be in the centre of the track)</p>
           <p><code class="function">node.leftSide</code>The position of the point on the left wall nearest this node.</p>
@@ -109,7 +112,7 @@
           <p><code class="function">car:turnRight()</code>Turn the car right.</p>
           <span class="precaption">Example:</span>
           <pre class="examplecode"><code>
-function update()
+function Update()
   car:accelerate()
   -- accelerate every tick
 end
