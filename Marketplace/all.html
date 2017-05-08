@@ -212,6 +212,7 @@ function Update()
     var isRunning = false;
     var tweakedScriptID = 0;
     var dataInTesting;
+    var newentryadded = false;
 
     function loadPage(page) {
       document.getElementsByClassName("activetab")[0].className = "";
@@ -279,12 +280,15 @@ function Update()
         if (ready) socket.emit('run', data);
         else {
           alert('no unity instance');
+          document.getElementById("runcont").innerHTML = "run";
+          isRunning = false;
         }
       });
       document.getElementById("runcont").innerHTML = "Running...";
     }
 
     function receiveResults(data) {
+      newentryadded = false;
       document.getElementById("runcont").innerHTML = "Run";
       isRunning = false;
       let cont = document.getElementById("resultsholder");
@@ -310,6 +314,8 @@ function Update()
     }
 
     function addEntryToMarketplace() {
+      if(newentryadded) return;
+      else newentryadded = true;
       let data = dataInTesting;
       let oldlocal = JSON.parse(localStorage.marketplace);
       let woo = findNode(oldlocal, data.parentID);
