@@ -4,10 +4,9 @@
 <head>
   <title>AI Racing</title>
   <link href="https://fonts.googleapis.com/css?family=Montserrat:300|Source+Code+Pro:300" rel="stylesheet">
+  <link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
   <link rel="stylesheet" href="all.css">
   <link rel="stylesheet" href="/hlua/highlight.css">
-  <link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
-
   <script src="hlua/highlight.pack.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.min.js"></script>
@@ -16,20 +15,6 @@
   <script src="http://codemirror.net/mode/lua/lua.js"></script>
   <script src="http://codemirror.net/addon/edit/matchbrackets.js"></script>
   <script src="http://codemirror.net/addon/edit/continuecomment.js"></script>
-
-  <script language="javascript">
-
-    window.onload = function () {
-
-        var editor = CodeMirror.fromTextArea(document.getElementById('scripteditor'), {
-            mode: "lua",
-            theme: "default",
-            lineNumbers: false
-        });
-    };
-
-  </script>
-
 </head>
 
 <body>
@@ -39,26 +24,33 @@
       <li onclick="loadPage('marketplace')" id="navmarketplace">marketplace</li>
       <li onclick="loadPage('leaderboard')" id="navleaderboard">leaderboard</li>
       <li onclick="loadPage('editor')" id="naveditor">editor</li>
-      <li onclick="loadPage('docs')" id="navdocs">docs</li>
       <li onclick="loadPage('options')" id="navoptions">options</li>
       <li onclick="loadPage('results')" id="navresults">results</li>
       <li onclick="tryRun()" id="runcont">run</li>
     </ul>
   </nav>
-
   <aside id="scriptviewcontainer"></aside>
-
   <main class="tabwrapper" id="splash">
     <div class="splasher">
       <div>
-        <p>Use the marketplace to find scripts and see how they've changed over time.</p>
-        <p>Check the leaderboard to see the fastest and most efficient scripts.</p>
-        <p>Run a new script from the editor and see its results in the Unity engine.</p>
-        <p>See the results afterwards and add your entry to the marketplace.</p>
+        <section>
+          <h2>Marketplace and Leaderboard</h2>
+          <p>Use the marketplace to see all the scripts that have been tested on the track. Brighter nodes contain better scripts, according to the selected statistic.</p>
+          <p>Click a node in the tree to see the script. You can 'tweak' a script to see if you can boost its performance. When you press 'tweak' the script is loaded into the editor.</p>
+          <p>With the leaderboard, you can see the (up to) ten best scripts for the selected statistic.</p>
+        </section>
+        <section>
+          <h2>Editor</h2>
+          <p>The API lists everything you need to know in order to write or edit a script. When you're happy with the script you've made, press 'run' to test it on the track.</p>
+        </section>
+        <section>
+          <h2>Options and Results</h2>
+          <p>Choose a track and a world type. This determines both how your car is tested on the track and which race results are </p>
+          <p>You can also select which statistic you want to compare on the leaderboards and in the marketplace.</p>
+        </section>
       </div>
     </div>
   </main>
-
   <main class="tabwrapper" id="marketplace">
     <div id="chartpadding">
       <div id="marketcont"></div>
@@ -67,9 +59,9 @@
   <main class="tabwrapper" id="leaderboard">
     <div id="leadercont"></div>
   </main>
-
-  <main class="tabwrapper" id="docs">
-    <div class="docs">
+  <main class="tabwrapper" id="editor">
+    <div class="splitter">
+      <div>
         <section id="language">
           <h2>Language</h2>
           <p>Lua is the scripting language you should write your scripts in.</p>
@@ -102,7 +94,7 @@
           <p><code class="function">car:lastNode()</code>The previous node the car passed through</p>
           <p><code class="function">car:nextNode()</code>The next node the car must pass through.</p>
           <p><code class="function">car:nodeAfter()</code>The node the car must pass through after passing the next node.</p>
-          <p>Each <code class="function">node</code>object has useful information about the track at that point:</p>
+          <p>Each <code class="function inlinefunction">node</code>object has useful information about the track at that point:</p>
           <p><code class="function">node.position</code>The position of the node (will always be in the centre of the track)</p>
           <p><code class="function">node.leftSide</code>The position of the point on the left wall nearest this node.</p>
           <p><code class="function">node.rightSide</code>The position of the point on the right wall nearest this node. Note that the position, left side and right side will always lie on the same line.</p>
@@ -123,11 +115,10 @@ function update()
 end
             </code></pre>
         </section>
-    </div>
-  </main>
+      </div>
+      <div id="alleditorholder">
+        <input id="nameeditor" value="Your name"></input>
 
-  <main class="tabwrapper" id="editor">
-      <div class="editor">
         <textarea id="scripteditor">spedlim = 23
 lim = 0
 function Update()
@@ -164,31 +155,50 @@ function Update()
       car:turnLeft()
     end
   end
-end</textarea>
-      </div>
-  </main>
-
-  <main class="tabwrapper" id="options">
-
-    <div class="splasher">
-      <div>
-        <p>site in construction lol</p>
+          end</textarea>
       </div>
     </div>
-
   </main>
-
+  <main class="tabwrapper" id="options">
+    <div class="splasher">
+      <div>
+        <section>
+          <h2>Track</h2>
+          <ul id="optionnumber" class="optionsrow">
+            <li onclick="setOption(0,0)">Ring</li>
+            <li onclick="setOption(0,1)">Dynamo</li>
+            <li onclick="setOption(0,2)">Orangutan</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Race Type</h2>
+          <ul id="optiontype" class="optionsrow">
+            <li onclick="setOption(1,0)">Checkpoints</li>
+            <li onclick="setOption(1,1)">Walls</li>
+            <li onclick="setOption(1,2)">Oblivion</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Statistic</h2>
+          <p>Which race statistic would you like to compare?</p>
+          <ul id="optionstats" class="optionsrow">
+            <li onclick="setOption(2,0)">Fastest Time</li>
+            <li onclick="setOption(2,1)">Max Speed</li>
+            <li onclick="setOption(2,2)">Oblivion</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
   <main class="tabwrapper" id="results">
 
     <div class="splasher">
       <div id="resultsholder">
-
+        <p>Run a race to see results...</p>
       </div>
     </div>
 
   </main>
-
-
   <script>
     localStorage.marketplace = JSON.stringify({
       text: {
@@ -208,7 +218,9 @@ end</textarea>
             time: 2000
           },
           script: "a",
-          children: []
+          children: [],
+          trackNumber: 2,
+          trackType: 2
         },
         {
           text: {
@@ -219,23 +231,26 @@ end</textarea>
             time: 1000
           },
           script: "a",
-          children: []
+          children: [],
+
+          trackNumber: 2,
+          trackType: 2
         }
-      ]
+      ],
+      trackNumber: 2,
+      trackType: 2
     });
 
   </script>
-
-
   <script>
-    // Game options
-    var trackNo = 2;
-    var trackType = 2;
-    // Scripts
+    var notifiedDeadServer = false;
     var entries = new Map();
     var socket;
-    // Leaderboard options
-    var toptentype = 1;
+    var codemirror;
+    var newID = 0;
+    var selectedStat = 0;
+    var selectedTrack = 0;
+    var selectedTrackType = 0;
     var isRunning = false;
     var tweakedScriptID = 0;
     var dataInTesting;
@@ -245,7 +260,14 @@ end</textarea>
       document.getElementsByClassName("activemain")[0].className = "tabwrapper";
       document.getElementById("nav" + page).className = "activetab";
       document.getElementById(page).className = "tabwrapper activemain";
-      if (page === "leaderboard") genLeaderboard(toptentype);
+      if (page === "leaderboard") genLeaderboard();
+      if (page === "editor") {
+        codemirror = CodeMirror.fromTextArea(document.getElementById('scripteditor'), {
+          mode: "lua",
+          theme: "default",
+          lineNumbers: false
+        });
+      }
     }
 
     function loadScript(ID) {
@@ -283,16 +305,21 @@ end</textarea>
       if (isRunning) return;
       isRunning = true;
       let scripttext = document.getElementById("scripteditor").value;
+      let name = document.getElementById("nameeditor").value;
+      if (name === "Your name") name = "Player";
       let data = {
         script: scripttext,
-        trackNo: trackNo,
-        trackType: trackType
+        trackNo: selectedTrack,
+        trackType: selectedTrackType
       };
       dataInTesting = {
         script: scripttext,
         parentID: tweakedScriptID,
-        trackNo: trackNo,
-        trackType: trackType
+        trackNo: selectedTrack,
+        trackType: selectedTrackType,
+        name: name,
+        trackNumber: selectedTrack,
+        trackType: selectedTrackType
       }
       console.log("trying to run");
       socket.emit('isReady');
@@ -302,57 +329,76 @@ end</textarea>
           alert('no unity instance');
         }
       });
+      document.getElementById("runcont").innerHTML = "Running...";
     }
 
     function receiveResults(data) {
+      document.getElementById("runcont").innerHTML = "Run";
       isRunning = false;
-      console.log(data);
       let cont = document.getElementById("resultsholder");
+      dataInTesting.stats = {
+        time: data.time,
+        maxSpeed: data.maxSpeed
+      }
+      // remove button if error
       cont.innerHTML = `
 <p>Time: ${data.time}</p>
 <p>Max Speed: ${data.maxSpeed}</p>
 <p>Error: ${data.error}</p>
 <button onclick="addEntryToMarketplace()">Add To Marketplace</button>
         `;
+      loadPage("results");
     }
 
     function addEntryToMarketplace() {
       let data = dataInTesting;
       let oldlocal = JSON.parse(localStorage.marketplace);
-      let woo = findNode(oldlocal);
-      woo.children.push({
+      let woo = findNode(oldlocal, data.parentID);
+      let newentry = {
         text: {
-          name: "b",
-          desc: 0
+          name: data.name,
+          desc: newID
         },
-        stats: {
-          time: 0
-        },
-      });
+        stats: data.stats,
+        script: data.script,
+        trackNumber: data.trackNumber,
+        trackType: data.trackType,
+        children: []
+      };
+      woo.children.push(newentry);
+      localStorage.marketplace = JSON.stringify(oldlocal);
+      addToMap(data.parentID, newentry);
+      loadTree();
+      newID += 1;
     }
 
-    function findNode(from) {
-
+    function findNode(from, ID) {
+      if (from.ID === ID) return from;
+      for (let node in from.children) {
+        let res = findNode(node, ID);
+        if (res) return res;
+      }
     }
 
-    function genLeaderboard(type) {
+    function genLeaderboard() {
       let cont = document.getElementById("leadercont");
       cont.innerHTML = "";
       let f;
-      let tops = [];
-      if (type === 1) f = (e1, e2) => e1.stats.time < e1.stats.time;
-      for (let entry of entries.values()) {
-        p = 10;
-        while (p > 0 && (!tops[p] || f(entry, tops[p - 1]))) p--;
-        for (let x = 9; x > p; x--) {
-          tops[x] = tops[x - 1];
+      let tops = Array.from(entries.values()).filter((el) => {
+        return el.trackType === selectedTrackType && el.trackNumber === selectedTrack;
+      }).sort((a, b) => {
+        switch (selectedStat) {
+          case 0:
+            return a.stats.time - b.stats.time;
+          case 1:
+            return b.stats.maxSpeed - a.stats.maxSpeed;
         }
-        tops[p] = entry;
-      }
+      });
       let place = 0;
       for (let entry of tops) {
         if (!entry) continue;
         place += 1;
+        if (place === 11) break;
         let specialclass = "";
         if (place === 1) specialclass = " firstplace";
         else if (place === 2) specialclass = " secondplace";
@@ -370,6 +416,9 @@ end</textarea>
     }
 
     function addToMap(parentID, entry) {
+      if (parseInt(entry.text.desc) >= newID) {
+        newID = parseInt(entry.text.desc) + 1;
+      }
       let childrenIDs = [];
       for (let child of entry.children) {
         childrenIDs.push(child.text.desc);
@@ -381,17 +430,14 @@ end</textarea>
         script: entry.script,
         name: entry.text.name,
         stats: entry.stats,
-        childrenIDs: childrenIDs
+        childrenIDs: childrenIDs,
+        trackNumber: entry.trackType,
+        trackType: entry.trackType
       });
     }
 
-    function ready() {
-      //tabs
-      document.getElementById("splash").className = "tabwrapper activemain";
-      document.getElementById("navsplash").className = "activetab";
-      //marketplace
+    function loadTree() {
       let marketplace = JSON.parse(localStorage.marketplace);
-      addToMap(-1, marketplace);
       var struct = {
         chart: {
           container: "#marketcont",
@@ -421,16 +467,46 @@ end</textarea>
           loadScript(node.getElementsByClassName("node-desc")[0].innerHTML);
         });
       }
+    }
 
-      // server
+    function setOption(kind, newone) {
+      if (kind === 0) selectedTrack = newone;
+      else if (kind === 1) selectedTrackType = newone;
+      else selectedStat = newone;
+      highlightOptions();
+    }
+
+    function highlightOptions() {
+      let list = document.getElementById("optionnumber").getElementsByTagName("li");
+      for (let x of list) x.className = "";
+      list[selectedTrack].className = "selectedoption";
+      list = document.getElementById("optiontype").getElementsByTagName("li");
+      for (let x of list) x.className = "";
+      list[selectedTrackType].className = "selectedoption";
+      list = document.getElementById("optionstats").getElementsByTagName("li");
+      for (let x of list) x.className = "";
+      list[selectedStat].className = "selectedoption";
+    }
+
+    function ready() {
+      document.getElementById("splash").className = "tabwrapper activemain";
+      document.getElementById("navsplash").className = "activetab";
+      addToMap(-1, JSON.parse(localStorage.marketplace));
+      highlightOptions();
+      loadTree();
       socket = io('http://127.0.0.1:4567');
       socket.on('finishedRun', receiveResults);
       socket.on('requestType', () => socket.emit('isBrowser'));
+      socket.on('connect_error', () => {
+        if (!notifiedDeadServer) {
+          alert("Node server not running");
+          notifiedDeadServer = true;
+        }
+      });
     }
     ready();
 
   </script>
-
 </body>
 
 </html>

@@ -1,3 +1,5 @@
+/* HEADER */
+
 * {
   padding: 0;
   margin: 0;
@@ -13,12 +15,18 @@ body {
 nav {
   width: 100%;
   position: fixed;
-  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   font-weight: 300;
   font-size: 1.5em;
-  border-bottom: 1px solid rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 0 10px black;
+  transition: all 0.2s ease-in-out;
+}
+
+nav:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 nav li {
@@ -27,16 +35,17 @@ nav li {
   cursor: pointer;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  transition: all 0.2s ease-in-out;
 }
 
 nav li:hover {
-  background-color: rgba(255,255,255,0.7);
+  background-color: rgba(255, 255, 255, 0.7);
   color: black;
 }
 
 #runcont {
   float: right;
-  background-color: rgba(100,200,255, 0.7);
+  background-color: rgba(100, 200, 255, 0.7);
   border-bottom-left-radius: 5px;
   border-top-right-radius: 0px;
   padding: 15px 70px;
@@ -47,7 +56,7 @@ nav li:hover {
 }
 
 .activetab {
-  background-color: rgba(255,255,255,0.7);
+  background-color: rgba(255, 255, 255, 0.7);
   color: black;
 }
 
@@ -60,188 +69,19 @@ nav li:hover {
   display: block;
 }
 
+
+/* MAIN PAGE */
+
 .splasher {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  font-size: 1.8em;
-  font-weight: 200;
-}
-
-.splasher div {
   max-width: 90%;
-  text-align: center;
-  background-color: rgba(255,255,255,0.5);
-  padding: 20px 50px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
-
-/* script view */
-
-#scriptviewcontainer{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: auto;
-  background-color: rgba(0, 0, 0, 0.3);
-  min-height: 100vh;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-
-.asidecontainer {
-  background-image: url(img/back.png);
-  padding: 15px;
-  margin-bottom: 200px;
-  box-sizing: border-box;
-  border-radius: 5px;
-  box-shadow: 0 0 150px 20px black;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.asidecontainer div {
-/*  width: 100%;*/
-  position: relative;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  color: white;
-  font-size: 1.3em;
-  user-select: none;
-  cursor: default;
-}
-
-aside button {
-  margin-left: 30px;
-  padding: 6px 10px;
-}
-
-aside h2 {
-  font-weight: 300;
-  font-family: 'Montserrat', sans-serif;
-}
-
-aside h3 {
-  padding-top: 6px;
-  margin-left: 20px;
-  font-size: 0.9em;
-  align-self: center;
-}
-
-aside pre {
-  padding: 10px;
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.8);
-  font-weight: 300;
-  font-family: 'Source Code Pro', monospace;
-  white-space: pre-wrap;
-  color: white;
-  border: 0.5px solid white;
-}
-
-
-/* leaderboard, marketplace */
-
-#leadercont {
-  max-width: 900px;
-  padding-top: 130px;
   margin: 0 auto;
 }
 
-.place {
-  background-color: white;
-/*  border: 1px solid black;*/
-  padding: 5px 10px;
-  font-size: 1.5em;
-  font-family: 'Source Code Pro', monospace;
-  box-sizing: border-box;
-}
-
-.firstplace {
-  background: linear-gradient(to bottom, rgb(255, 215, 0), rgb(218, 165, 32));
-}
-
-.secondplace {
-  background: linear-gradient(to bottom, rgb(192, 192, 192), rgb(119, 136, 153));
-}
-
-.thirdplace {
-  background: linear-gradient(to bottom, rgb(230, 125, 50), rgb(180, 102, 55));
-}
-
-.time {
-  padding: 10px 0;
-  font-size: 1.2em;
-  font-family: 'Source Code Pro', monospace;
-  margin-left: 30px;
-}
-
-.millis {
-  padding: 17px 0 10px 0;
-  font-size: 0.7em;
-  font-family: 'Source Code Pro', monospace;
-  margin-right: 30px;
-}
-
-.nickname {
-  font-size: 1.4em;
-}
-
-.leaderscriptbutton {
-  float: right;
-  background-color: black;
-  color: white;
-  padding: 10px 15px;
-  box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 300;
-}
-
-/* editor, docs */
-
-.docs {
-    padding-top: 100px;
-}
-
-.editor {
-    padding-top: 100px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.splitter {
-  display: flex;
-  justify-content: center;
-  max-height: 100vh;
-}
-
-.splitter div {
-  flex: 1;
-  margin: 0 10px;
-  overflow-y: scroll;
-  padding-top: 100px;
-}
-
-#scripteditor {
-  width: calc(100% - 20px);
-  margin: 10px;
-  border-radius: 5px;
-  padding: 10px;
-  box-sizing: border-box;
-  color: white;
-  background-color: black;
-  border: 1px solid white;
-  resize: vertical;
-  height: 60vh;
-  font-family: 'Source Code Pro', monospace;
-  font-size: 1.4em;
-}
+/* BOXES */
 
 section {
   background-color: rgba(255, 255, 255, 0.7);
@@ -261,36 +101,8 @@ section p {
   margin: 10px 0;
 }
 
-.function {
-  font-family: 'Source Code Pro', monospace;
-  padding: 0 3px;
-  margin: 4px 10px 4px 0;
-  display: inline-block;
-  background-color: white;
-  font-size: 1.1em;
-  border-radius: 5px;
-}
 
-.inlinefunction {
-  margin: 4px 5px;
-}
-
-.precaption {
-  margin: 20px 0 5px 0;
-  display: block;
-  font-size: 1.2em;
-}
-
-.examplecode {
-  color: white;
-  display: inline-block;
-  box-shadow: 0 0 5px rgb(255, 200, 150) inset;
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 5px 30px;
-  border-radius: 4px;
-  border: 1px solid white;
-  min-width: 50%;
-}
+/* MARKETPLACE */
 
 .node-name {
   color: white;
@@ -332,9 +144,275 @@ section p {
 
 #chartpadding {
   padding-top: 200px;
-  margin: 0 auto;
 }
 
 #marketcont {
   position: relative;
+  width: auto;
+  margin: 0 auto;
+  background: white;
+}
+
+
+/* SCRIPT VIEW */
+
+#scriptviewcontainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  background-color: rgba(0, 0, 0, 0.3);
+  min-height: 100vh;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.asidecontainer {
+  background-image: url(img/back.png);
+  padding: 15px;
+  margin-bottom: 200px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  box-shadow: 0 0 150px 20px black;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.asidecontainer div {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  color: white;
+  font-size: 1.3em;
+  user-select: none;
+  cursor: default;
+}
+
+aside button {
+  margin-left: 30px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: black;
+  color: white;
+  border: 1px solid white;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+aside button:hover {
+  color: black;
+  background-color: white;
+  border: 1px solid black;
+}
+
+aside h2 {
+  font-weight: 300;
+  font-family: 'Montserrat', sans-serif;
+}
+
+aside h3 {
+  padding-top: 6px;
+  margin-left: 20px;
+  font-size: 0.9em;
+  align-self: center;
+}
+
+aside pre {
+  padding: 10px;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.8);
+  font-weight: 300;
+  font-family: 'Source Code Pro', monospace;
+  white-space: pre-wrap;
+  color: white;
+  border: 0.5px solid white;
+}
+
+
+/* LEADERBOARD */
+
+#leadercont {
+  max-width: 700px;
+  padding-top: 130px;
+  margin: 0 auto;
+}
+
+.place {
+  background-color: white;
+  padding: 5px 15px;
+  font-size: 1.5em;
+  font-family: 'Source Code Pro', monospace;
+  box-sizing: border-box;
+  border-radius: 5% 50%;
+}
+
+.firstplace {
+  background: linear-gradient(to bottom, rgb(255, 215, 0), rgb(218, 165, 32));
+}
+
+.secondplace {
+  background: linear-gradient(to bottom, rgb(192, 192, 192), rgb(119, 136, 153));
+}
+
+.thirdplace {
+  background: linear-gradient(to bottom, rgb(230, 125, 50), rgb(180, 102, 55));
+}
+
+.time {
+  padding: 10px 0;
+  font-size: 1.2em;
+  font-family: 'Source Code Pro', monospace;
+  margin-left: 60px;
+}
+
+.millis {
+  padding: 17px 0 10px 0;
+  font-size: 0.7em;
+  font-family: 'Source Code Pro', monospace;
+  margin-right: 60px;
+}
+
+.nickname {
+  font-size: 1.4em;
+}
+
+.leaderscriptbutton {
+  float: right;
+  background-color: black;
+  color: white;
+  padding: 6px 15px;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.leaderscriptbutton:hover {
+  color: black;
+  background-color: white;
+  border: 1px solid black;
+}
+
+
+/* EDITOR */
+
+#scripteditor,
+#nameeditor {
+  margin: 10px;
+  border-radius: 5px;
+  padding: 10px;
+  width: calc(100% - 20px);
+  box-sizing: border-box;
+  color: white;
+  background-color: black;
+  border: 1px solid white;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 1.4em;
+}
+
+.CodeMirror {
+  border: 1px solid black;
+  font-size: 1.1em;
+  border-radius: 5px;
+  margin: 10px;
+  font-family: 'Source Code Pro', monospace;
+  padding: 5px;
+  height: auto;
+}
+
+#alleditorholder {
+  position: relative;
+}
+
+.splitter {
+  display: flex;
+  justify-content: center;
+  max-height: 100vh;
+}
+
+.splitter > div {
+  flex: 1;
+  margin: 0 10px;
+  overflow-y: scroll;
+  padding-top: 100px;
+}
+
+#scripteditor {
+  resize: vertical;
+  height: 75vh;
+}
+
+.function {
+  font-family: 'Source Code Pro', monospace;
+  padding: 0 3px;
+  margin: 4px 10px 4px 0;
+  display: inline-block;
+  background-color: white;
+  font-size: 1.1em;
+  border-radius: 5px;
+}
+
+.inlinefunction {
+  margin: 4px 5px;
+}
+
+.precaption {
+  margin: 20px 0 5px 0;
+  display: block;
+  font-size: 1.2em;
+}
+
+.examplecode {
+  display: inline-block;
+  box-shadow: 0 0 5px rgb(255, 200, 150) inset;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 5px 30px;
+  border-radius: 4px;
+  border: 1px solid white;
+  min-width: 50%;
+}
+
+
+/* OPTIONS */
+
+.optionsrow {
+  padding: 10px 0;
+}
+
+.optionsrow li {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: all 0.2s ease-in-out;
+}
+
+.optionsrow li:hover {
+  border: 1px solid white;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+.selectedoption {
+  border: 1px solid white !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  color: white !important;
+}
+
+
+/* RESULTS */
+
+#resultsholder {
+  
 }
