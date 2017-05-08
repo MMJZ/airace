@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection;
@@ -7,7 +7,9 @@ using System;
 public class TrackRenderer : MonoBehaviour {
 
   public Transform tree1, tree2, tree3, tree4;
-   
+  public Transform building1, building2, building3, building4;
+  public Transform butterfly;
+
   void Awake() {
 
     Track track = StartScreen.tracks [StartScreen.trackNumber];
@@ -30,7 +32,7 @@ public class TrackRenderer : MonoBehaviour {
 
       // */
     }
-	
+
     switch (StartScreen.trackType) {
       case 0:
         for (int i = 0; i < track.nodes.Length; i += 1) {
@@ -101,10 +103,14 @@ public class TrackRenderer : MonoBehaviour {
               cube.tag = "rightside";
             }
           }
-		  
-		  putTree(left, left1); 
-		  putTree(right, right1);
-		  
+
+		 //Use in case of "fillBuilding":
+		 // Vector3 dl = left-left1;
+		 // float angle = (float)((Math.Atan((dl.z)/(dl.x))*180/Math.PI));
+
+		  fillTree(left, left1);
+		  fillTree(right, right1);
+		  if (i%6 == 0) {Instantiate(butterfly);}
         }
         break;
       case 1:
@@ -119,11 +125,10 @@ public class TrackRenderer : MonoBehaviour {
           lc.transform.LookAt (n2.leftSide);
           lc.transform.Rotate (0, 90, 0);
           lc.GetComponent<Renderer> ().material.color = blue;
-		  
-		  Destroy (lc.GetComponent <BoxCollider> ());		          
+
+		  Destroy (lc.GetComponent <BoxCollider> ());
 		  GameObject po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
           po.transform.position = n1.leftSide + new Vector3 (0, -0.5f, 0);
-		  Instantiate(tree1, n1.leftSide+new Vector3(-1,0,0), Quaternion.identity);
           po.GetComponent<Renderer> ().material.color = blue;
 
           Vector3 dr = n2.rightSide - n1.rightSide;
@@ -138,10 +143,33 @@ public class TrackRenderer : MonoBehaviour {
 
           po = GameObject.CreatePrimitive (PrimitiveType.Cylinder);
           po.transform.position = n1.rightSide + new Vector3 (0, -0.5f, 0);
-          po.GetComponent<Renderer> ().material.color = blue; 
-		  
-		  putTree(n1.leftSide, n2.leftSide); 
-		  putTree(n1.rightSide, n2.rightSide);
+          po.GetComponent<Renderer> ().material.color = blue;
+
+		  float angle = (float)((Math.Atan((dl.z)/(dl.x))*180/Math.PI));
+
+		  //Copying the right/left sides of n1/2 multiplying distance from central node by a factor of 1.4 so that the objects framing the track are offest away from the track and do not intrude onto it to prevent interference with cars on the track.
+		  Vector3 newL1 = new Vector3 ((float)(n1.position.x - 1.4f*n1.width * Math.Cos(Math.PI*n1.theta/180)), 0 , (float)(n1.position.z - 1.4f*n1.width * Math.Sin(Math.PI*n1.theta/180)));
+
+		  Vector3 newL2 = new Vector3 ((float)(n2.position.x - 1.4f*n2.width * Math.Cos(Math.PI*n2.theta/180)), 0 , (float)(n2.position.z - 1.4f*n2.width * Math.Sin(Math.PI*n2.theta/180)));
+
+		  Vector3 newR1 = new Vector3 ((float)(n1.position.x + 1.4f*n1.width * Math.Cos(Math.PI*n1.theta/180)), 0 , (float)(n1.position.z + 1.4f*n1.width * Math.Sin(Math.PI*n1.theta/180)));
+
+		  Vector3 newR2 = new Vector3 ((float)(n2.position.x + 1.4f*n2.width * Math.Cos(Math.PI*n2.theta/180)), 0 , (float)(n2.position.z + 1.4f*n2.width * Math.Sin(Math.PI*n2.theta/180)));
+
+		  fillAny(newL1,newL2,angle);
+		  fillAny(newR1, newR2, angle);
+
+		//  Vector3 adjust = new Vector3(250*(float)(Math.PI*Math.Sin(angle))/180, 0, 250*(float)(Math.PI*Math.Cos(angle))/180);
+		//  Vector3 newL1 = n1.leftSide + adjust;
+		//  Vector3 newL2 = n2.leftSide +adjust;
+		//  Vector3 newR1 = n1.rightSide - adjust;
+		//  Vector3 newR2 = n2.rightSide - adjust;
+		//  fillAny(newL1,newL2,angle);
+		//  fillAny(newR1, newR2, angle);
+		//  fillAny(n1.leftSide, n2.leftSide, angle);
+		//  fillAny(n1.rightSide, n2.rightSide, angle);
+		  if (x%6 == 0) {Instantiate(butterfly);}
+
         }
         break;
       case 2:
@@ -183,27 +211,62 @@ public class TrackRenderer : MonoBehaviour {
           po.GetComponent<Renderer> ().material.color = white;
 
           po.transform.localScale += new Vector3 (0, 5, 0);
-		  
-		  putTree(n1.leftSide, n2.leftSide); 
-		  putTree(n1.rightSide, n2.rightSide);
-		  
+
         }
         break;
-    }    
+    }
   }
-  
-  private void putTree(Vector3 a, Vector3 b) {
+
+  private void fillTree(Vector3 a, Vector3 b) {
 	Vector3 c = (a+b)/2;
     if ((a-b).magnitude>8) {
-	    int ttype = UnityEngine.Random.Range(1,5);
-		switch (ttype) {
+	    putTree(c);
+		fillTree(a,c); fillTree(c,b);
+	}
+  }
+
+  private void fillBuilding(Vector3 a, Vector3 b, float angle) {
+	Vector3 c = (a+b)/2;
+    if ((a-b).magnitude>8) {
+		putBuilding(c, angle);
+		fillBuilding(a,c, angle); fillBuilding(c,b, angle);
+	}
+  }
+
+  private void fillAny(Vector3 a, Vector3 b, float angle) {
+	Vector3 c = (a+b)/2;
+    if ((a-b).magnitude>8) {
+		putAny(c, angle);
+		fillAny(a,c, angle); fillAny(c,b, angle);
+	}
+  }
+
+  private void putTree(Vector3 c) {
+	int ttype = UnityEngine.Random.Range(1,5);
+	switch (ttype) {
 		 case 1: Instantiate(tree1, c, Quaternion.identity); break;
 		 case 2: Instantiate(tree2, c, Quaternion.identity); break;
 		 case 3: Instantiate(tree3, c, Quaternion.identity); break;
 		 case 4: Instantiate(tree4, c, Quaternion.identity); break;
-	    }
-		putTree(a,c); putTree(c,b);
 	}
   }
-  
+
+  private void putBuilding(Vector3 c, float angle) {
+	int btype = UnityEngine.Random.Range(1,5);
+	switch (btype) {
+		 case 1: Instantiate(building1, c, Quaternion.Euler(0,-angle,0)); break;
+		 case 2: Instantiate(building2, c, Quaternion.Euler(0,-angle,0)); break;
+		 case 3: Instantiate(building3, c, Quaternion.Euler(0,-angle,0)); break;
+		 case 4: Instantiate(building4, c, Quaternion.Euler(0,-angle,0)); break;
+	}
+  }
+
+  private void putAny(Vector3 c, float angle) {
+	int bt = UnityEngine.Random.Range(1,3);
+	switch (bt) {
+		case 1: putTree(c); break;
+		case 2: putBuilding(c, angle); break;
+	}
+  }
+
 }
