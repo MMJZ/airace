@@ -87,9 +87,13 @@ public class CarAPI {
     return state.getDistanceToRightSide ();
   }
 
-  public float getAngleBetweenPoints(float x1, float y1, float x2, float y2) {
+  public float getAngleBetweenPoints(float x1, float z1, float x2, float z2) {
     float r = 90 - Mathf.Atan2 (y2 - y1, x2 - x1) * 180 / (float)Math.PI;
     return r < 0 ? r + 360 : r;
+  }
+
+  public float getAngleToNextNode() {
+      return getAngleBetweenPoints(state.position.x, state.position.z, state.nextNode.position.x, state.nextNode.position.z)
   }
 
   public float getDistanceToNextNode() {
