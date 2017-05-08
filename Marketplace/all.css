@@ -117,7 +117,6 @@ section p {
 
 .node {
   border-radius: 40%;
-  background-color: black;
   width: 30px;
   height: 30px;
   margin-left: -15px;
@@ -150,7 +149,6 @@ section p {
   position: relative;
   width: auto;
   margin: 0 auto;
-  background: white;
 }
 
 
@@ -173,7 +171,7 @@ section p {
 .asidecontainer {
   background-image: url(img/back.png);
   padding: 15px;
-  margin-bottom: 200px;
+  margin: 200px 0;
   box-sizing: border-box;
   border-radius: 5px;
   box-shadow: 0 0 150px 20px black;
@@ -231,6 +229,8 @@ aside pre {
   white-space: pre-wrap;
   color: white;
   border: 0.5px solid white;
+  max-height: 500px;
+  overflow-y: scroll;
 }
 
 
@@ -379,6 +379,7 @@ aside pre {
   border-radius: 4px;
   border: 1px solid white;
   min-width: 50%;
+  color: white;
 }
 
 
@@ -415,5 +416,26 @@ aside pre {
 /* RESULTS */
 
 #resultsholder {
+  background: rgba(255,255,255,0.6);
+  padding: 40px;
+  border-radius: 10px;
+  font-size: 2em;
+}
 
+#resultsholder p {
+  padding: 10px;
+}
+
+#addbutton {
+  margin: 10px;
+  background: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1.3em;
+  transition: all 0.2s ease-in-out;
+}
+
+#addbutton:hover {
+  color: white;
+  background: black;
 }
