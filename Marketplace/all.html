@@ -260,43 +260,27 @@ function Update()
       let scripttext = codemirror.getDoc().getValue();
       let name = document.getElementById("nameeditor").value;
       if (name === "Your name") name = "Player";
-      let data = {
-        script: scripttext,
-        trackNo: selectedTrack,
-        trackType: selectedTrackType
-      };
       dataInTesting = {
         script: scripttext,
         parentID: tweakedScriptID,
-        trackNo: selectedTrack,
-        trackType: selectedTrackType,
         name: name,
         trackNumber: selectedTrack,
         trackType: selectedTrackType
       }
       console.log("trying to run");
       socket.emit('isReady');
-      socket.on('readyStatus', ready => {
-        if (ready) socket.emit('run', data);
-        else {
-          alert('no unity instance');
-          document.getElementById("runcont").innerHTML = "run";
-          isRunning = false;
-        }
-      });
-      document.getElementById("runcont").innerHTML = "Running...";
+      document.getElementById("runcont").innerHTML = "running...";
     }
 
     function receiveResults(data) {
       newentryadded = false;
-      document.getElementById("runcont").innerHTML = "Run";
+      document.getElementById("runcont").innerHTML = "run";
       isRunning = false;
       let cont = document.getElementById("resultsholder");
       dataInTesting.stats = {
         time: data.time,
         maxSpeed: data.maxSpeed
       }
-      // remove button if error
       if (data.error) {
         cont.innerHTML = `
 <p>The script encountered an error:</p>
@@ -314,7 +298,7 @@ function Update()
     }
 
     function addEntryToMarketplace() {
-      if(newentryadded) return;
+      if (newentryadded) return;
       else newentryadded = true;
       let data = dataInTesting;
       let oldlocal = JSON.parse(localStorage.marketplace);
@@ -334,6 +318,7 @@ function Update()
         children: []
       };
       woo.children.push(newentry);
+      if (!oldlocal) alert("woooooooooooo");
       localStorage.marketplace = JSON.stringify(oldlocal);
       addToMap(data.parentID, newentry);
       loadTree();
@@ -341,12 +326,12 @@ function Update()
     }
 
     function findNode(from, ID) {
-      
+
       console.log("finding from");
       console.log(from);
-      
+
       console.log("looking for ID " + ID);
-      
+
       if (from.text.desc == ID) return from;
       for (let node of from.children) {
         let res = findNode(node, ID);
@@ -378,29 +363,33 @@ function Update()
         if (place === 1) specialclass = " firstplace";
         else if (place === 2) specialclass = " secondplace";
         else if (place === 3) specialclass = " thirdplace";
-        let time = entry.stats.time;
+        let time = entry.stats.time * 200;
+        let secs = Math.floor(time / 1000) % 60;
+        if (secs < 10) secs = "0" + secs;
+        let millis = time % 1000;
+        if (millis < 10) millis = "00" + millis;
+        else if (millis < 100) millis = "0" + millis;
         cont.innerHTML += `
         <section>
           <span class="place ${specialclass}">${place}</span>
-          <span class="time">${(Math.floor(time / 60000)) + ":" + (Math.floor(time / 1000) % 60)}</span>
-          <span class="millis">${"." + (time % 1000)}</span>
+          <span class="time">${(Math.floor(time / 60000))}:${secs}</span><span class="millis">.${millis}</span>
           <span class="nickname">${entry.name}</span>
           <span class="leaderscriptbutton" onclick="loadScript(${place - 1})">View Script</span>
         </section>`;
       }
     }
-    
-    function colourMarketplace(){
+
+    function colourMarketplace() {
       let min = 99999999999;
       let max = 0;
-      for(let x of document.getElementsByClassName("node")){
+      for (let x of document.getElementsByClassName("node")) {
         let id = parseInt(x.getElementsByClassName("node-desc")[0].innerHTML);
         let time = entries.get(id).stats.time;
-        if(time < min) min = time;
-        if(time > max) max = time;
+        if (time < min) min = time;
+        if (time > max) max = time;
       }
       max -= min;
-      for(let x of document.getElementsByClassName("node")){
+      for (let x of document.getElementsByClassName("node")) {
         let id = parseInt(x.getElementsByClassName("node-desc")[0].innerHTML);
         let time = entries.get(id).stats.time - min;
         let rgb = 245 * time / max + 5;
@@ -486,7 +475,26 @@ function Update()
     function ready() {
       document.getElementById("splash").className = "tabwrapper activemain";
       document.getElementById("navsplash").className = "activetab";
-      addToMap(-1, JSON.parse(localStorage.marketplace));
+      let ls = localStorage.marketplace;
+      if (!ls) {
+        ls = JSON.stringify({
+          text: {
+            name: "Base",
+            desc: 0
+          },
+          stats: {
+            time: 999999,
+            maxSpeed: 0
+          },
+          script: "function Update()\n\nend",
+          children: [],
+          trackNumber: 0,
+          trackType: 0
+        });
+        localStorage.marketplace = ls;
+        alert("reset somehow");
+      }
+      addToMap(-1, JSON.parse(ls));
       highlightOptions();
       loadTree();
 
@@ -504,7 +512,24 @@ function Update()
           notifiedDeadServer = true;
         }
       });
-
+      socket.on('lostUnity', () => {
+        if (isRunning) receiveResults({
+          data: "Connection to Unity lost"
+        });
+        alert("lost unity oh no");
+      });
+      socket.on('readyStatus', ready => {
+        if (ready) socket.emit('run', {
+          script: dataInTesting.script,
+          trackNo: dataInTesting.trackNumber,
+          trackType: dataInTesting.trackType
+        });
+        else {
+          alert('no unity instance');
+          document.getElementById("runcont").innerHTML = "run";
+          isRunning = false;
+        }
+      });
     }
     ready();
 

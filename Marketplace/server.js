@@ -9,12 +9,16 @@ io.attach(4567);
 var unity;
 var browser;
 
+var count = 0;
+
 io.on('connection', (socket) => {
 
   let type = 0;
+  count++;
+  console.log("count: " + count);
 
   console.log('connection');
-  
+
   socket.emit('requestType');
 
   socket.on('isBrowser', () => {
@@ -33,9 +37,17 @@ io.on('connection', (socket) => {
   });
 
   socket.on('isUnity', () => {
-    console.log('got unity');
-    type = 2;
-    unity = socket;
+    console.log(unity);
+    if (unity !== undefined) {
+      console.log('got unity again');
+      type = 2;
+      unity.disconnect();
+      unity = socket;
+    } else {
+      console.log('got unity');
+      type = 2;
+      unity = socket;
+    }
   });
 
   socket.on('finishedRun', data => {
@@ -44,12 +56,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    count--;
+    console.log("count: " + count);
     if (type === 1) {
       browser = undefined;
       console.log("lost browser");
     } else if (type === 2) {
       unity = undefined;
       console.log("lost unity");
+      if (browser !== undefined) browser.emit('lostUnity');
     } else {
       console.log('lost something; fuck knows what');
     }

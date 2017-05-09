@@ -13,7 +13,6 @@ namespace UnityStandardAssets.Vehicles.Car {
     private Racer[] racers;
     private int timer = 0;
     private bool isTrial, sentResult;
-    public static int parentScriptID;
     public static RaceStats stats;
 
     class Racer {
@@ -61,24 +60,22 @@ namespace UnityStandardAssets.Vehicles.Car {
           state.setFacingAngle (car.transform.eulerAngles.y);
         } catch (NLua.Exceptions.LuaException e) {
           instance.ShowErrorAndQuit ("LUA ERROR: " + e.ToString ());
+        } catch (Exception e) {
+          Debug.Log ("internal error " + e);
         }
         return finishedRace;
       }
 
       public void passedGate(int gateid) {
-
         if(!passedStartingGate) {
           passedStartingGate = true;
           return;
         }
-        if(gateid - latestVisitedNode == 1) {
+        if(gateid - latestVisitedNode == 1)
           latestVisitedNode = gateid;
-        }
-        if(gateid == 0 && latestVisitedNode == track.nodes.Length - 1) {
+        if(gateid == 0 && latestVisitedNode == track.nodes.Length - 1)
           finishedRace = true;
-        }
         lastNode = gateid;
-        Debug.Log ("passed " + passedStartingGate + " latest " + latestVisitedNode);
         state.newSegment (track, lastNode);
       }
     }
@@ -101,11 +98,11 @@ namespace UnityStandardAssets.Vehicles.Car {
       }
     }
 
-    protected void ShowErrorAndQuit(string s) {
+    public void ShowErrorAndQuit(string s) {
       Time.timeScale = 0;
       errorText.text = s;
       JSONObject result = new JSONObject ();
-      result.AddField ("time", -1);
+      //result.AddField ("time", -1);
       result.AddField ("error", s);
       StartScreen.socket.Emit ("finishedRun", result);
       SceneManager.LoadScene ("Start");
@@ -117,6 +114,9 @@ namespace UnityStandardAssets.Vehicles.Car {
       sentResult = false;
       timeText.text = "X";
       speedText.text = "X";
+      errorText.text = "";
+      sentResult = false;
+      Time.timeScale = 1f;
 
       Track track = StartScreen.tracks [StartScreen.trackNumber];
       string script = StartScreen.script;

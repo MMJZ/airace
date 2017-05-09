@@ -35,6 +35,8 @@ public class StartScreen : MonoBehaviour {
     new Track (new Node (0, 0, 315, 15), new Node (20, 50, 315, 15), new Node (70, 110, 330, 15), new Node (85, 140, 280, 20), new Node (120, 105, 240, 15), new Node (200, 85, 255, 15), new Node (230, 70, 270, 15), new Node (275, 75, 270, 15), new Node (300, 65, 270, 15), new Node (340, 70, 325, 15), new Node (360, 90, 305, 15), new Node (365, 120, 30, 15), new Node (350, 150, 0, 15), new Node (370, 175, 315, 15), new Node (460, 250, 260, 20), new Node (485, 235, 200, 20), new Node (475, 210, 180, 20), new Node (475, 150, 180, 20), new Node (495, 130, 270, 20), new Node (525, 150, 0, 20), new Node (510, 200, 310, 20), new Node (525, 220, 285, 15), new Node (590, 210, 220, 20), new Node (605, 180, 170, 20), new Node (490, 60, 150, 20), new Node (380, 20, 120, 15), new Node (340, 15, 100, 15), new Node (250, 25, 135, 15), new Node (240, 5, 100, 15), new Node (210, 10, 70, 15), new Node (200, 35, 45, 15), new Node (110, 60, 105, 15), new Node (70, 35, 140, 15), new Node (55, 0, 195, 15), new Node (70, -25, 200, 15), new Node (55, -80, 125, 15), new Node (15, -90, 145, 15), new Node (20, -150, 210, 15), new Node (55, -185, 180, 15), new Node (50, -210, 130, 15), new Node (-30, -190, 50, 15), new Node (-40, -170, 15, 15), new Node (-30, -150, 20, 15), new Node (-35, -80, 0, 15), new Node (-15, -20, 0, 15))
   };
 
+  public static bool connected = false;
+
   public static string script = "";
   public static bool isTrial = true;
   public static int noRacers = 1;
@@ -44,10 +46,15 @@ public class StartScreen : MonoBehaviour {
   public static SocketIOComponent socket;
 
   public void Start() {
-    GameObject go = GameObject.Find ("SocketIO");
-    socket = go.GetComponent<SocketIOComponent> ();
-    socket.On ("run", StartRace);
-    socket.On ("requestType", requestType);
+
+    if(!connected) {
+      GameObject go = GameObject.Find ("SocketIO");
+      socket = go.GetComponent<SocketIOComponent> ();
+      socket.On ("run", StartRace);
+      DontDestroyOnLoad (go);
+      socket.On ("requestType", requestType);
+      connected = true;
+    }
   }
 
   private void requestType(SocketIOEvent e) {

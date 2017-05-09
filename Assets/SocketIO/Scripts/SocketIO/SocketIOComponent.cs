@@ -27,7 +27,7 @@
 
 #endregion
 
-#define SOCKET_IO_DEBUG			// Uncomment this for debug
+//#define SOCKET_IO_DEBUG			// Uncomment this for debug
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,46 +40,46 @@ namespace SocketIO {
   public class SocketIOComponent : MonoBehaviour {
     #region Public Properties
 
-    public string url = "ws://127.0.0.1:4567/socket.io/?EIO=4&transport=websocket";
-    public bool autoConnect = true;
-    public int reconnectDelay = 5;
-    public float ackExpirationTime = 1800f;
-    public float pingInterval = 25f;
-    public float pingTimeout = 60f;
+    public static string url = "ws://127.0.0.1:4567/socket.io/?EIO=4&transport=websocket";
+    public static bool autoConnect = true;
+    public static int reconnectDelay = 5;
+    public static float ackExpirationTime = 1800f;
+    public static float pingInterval = 25f;
+    public static float pingTimeout = 60f;
 
-    public WebSocket socket { get { return ws; } }
+    public static WebSocket socket { get { return ws; } }
 
-    public string sid { get; set; }
+    public static string sid { get; set; }
 
-    public bool IsConnected { get { return connected; } }
+    public static bool IsConnected { get { return connected; } }
 
     #endregion
 
-    #region Private Properties
+    #region public static Properties
 
-    private volatile bool connected;
-    private volatile bool thPinging;
-    private volatile bool thPong;
-    private volatile bool wsConnected;
+    public static volatile bool connected;
+    public static volatile bool thPinging;
+    public static volatile bool thPong;
+    public static volatile bool wsConnected;
 
-    private Thread socketThread;
-    private Thread pingThread;
-    private WebSocket ws;
+    public static Thread socketThread;
+    public static Thread pingThread;
+    public static WebSocket ws;
 
-    private Encoder encoder;
-    private Decoder decoder;
-    private Parser parser;
+    public static Encoder encoder;
+    public static Decoder decoder;
+    public static Parser parser;
 
-    private Dictionary<string, List<Action<SocketIOEvent>>> handlers;
-    private List<Ack> ackList;
+    public static Dictionary<string, List<Action<SocketIOEvent>>> handlers;
+    public static List<Ack> ackList;
 
-    private int packetId;
+    public static int packetId;
 
-    private object eventQueueLock;
-    private Queue<SocketIOEvent> eventQueue;
+    public static object eventQueueLock;
+    public static Queue<SocketIOEvent> eventQueue;
 
-    private object ackQueueLock;
-    private Queue<Packet> ackQueue;
+    public static object ackQueueLock;
+    public static Queue<Packet> ackQueue;
 
     #endregion
 
@@ -90,6 +90,10 @@ namespace SocketIO {
     #region Unity interface
 
     public void Awake() {
+
+      if(StartScreen.connected)
+        return;
+
       encoder = new Encoder ();
       decoder = new Decoder ();
       parser = new Parser ();
@@ -122,12 +126,15 @@ namespace SocketIO {
     }
 
     public void Start() {
-      if(autoConnect) {
+      if(autoConnect && !StartScreen.connected) {
         Connect ();
       }
     }
 
     public void Update() {
+
+
+
       lock (eventQueueLock) { 
         while (eventQueue.Count > 0) {
           EmitEvent (eventQueue.Dequeue ());
@@ -240,9 +247,9 @@ namespace SocketIO {
 
     #endregion
 
-    #region Private Methods
+    #region public static Methods
 
-    private void RunSocketThread(object obj) {
+    public static void RunSocketThread(object obj) {
       WebSocket webSocket = (WebSocket)obj;
       while (connected) {
         if(webSocket.IsConnected) {
@@ -254,7 +261,7 @@ namespace SocketIO {
       webSocket.Close ();
     }
 
-    private void RunPingThread(object obj) {
+    public static void RunPingThread(object obj) {
       WebSocket webSocket = (WebSocket)obj;
 
       int timeoutMilis = Mathf.FloorToInt (pingTimeout * 1000);
@@ -285,16 +292,16 @@ namespace SocketIO {
       }
     }
 
-    private void EmitMessage(int id, string raw) {
+    public static void EmitMessage(int id, string raw) {
       EmitPacket (new Packet (EnginePacketType.MESSAGE, SocketPacketType.EVENT, 0, "/", id, new JSONObject (raw)));
     }
 
-    private void EmitClose() {
+    public static void EmitClose() {
       EmitPacket (new Packet (EnginePacketType.MESSAGE, SocketPacketType.DISCONNECT, 0, "/", -1, new JSONObject ("")));
       EmitPacket (new Packet (EnginePacketType.CLOSE));
     }
 
-    private void EmitPacket(Packet packet) {
+    public static void EmitPacket(Packet packet) {
       #if SOCKET_IO_DEBUG
       debugMethod.Invoke ("[SocketIO] " + packet);
       #endif
@@ -308,11 +315,11 @@ namespace SocketIO {
       }
     }
 
-    private void OnOpen(object sender, EventArgs e) {
+    public static void OnOpen(object sender, EventArgs e) {
       EmitEvent ("open");
     }
 
-    private void OnMessage(object sender, MessageEventArgs e) {
+    public static void OnMessage(object sender, MessageEventArgs e) {
       #if SOCKET_IO_DEBUG
       debugMethod.Invoke ("[SocketIO] Raw message: " + e.Data);
       #endif
@@ -337,7 +344,7 @@ namespace SocketIO {
       }
     }
 
-    private void HandleOpen(Packet packet) {
+    public static void HandleOpen(Packet packet) {
       #if SOCKET_IO_DEBUG
       debugMethod.Invoke ("[SocketIO] Socket.IO sid: " + packet.json ["sid"].str);
       #endif
@@ -345,16 +352,16 @@ namespace SocketIO {
       EmitEvent ("open");
     }
 
-    private void HandlePing() {
+    public static void HandlePing() {
       EmitPacket (new Packet (EnginePacketType.PONG));
     }
 
-    private void HandlePong() {
+    public static void HandlePong() {
       thPong = true;
       thPinging = false;
     }
 
-    private void HandleMessage(Packet packet) {
+    public static void HandleMessage(Packet packet) {
       if(packet.json == null) {
         return;
       }
@@ -383,23 +390,23 @@ namespace SocketIO {
       }
     }
 
-    private void OnError(object sender, ErrorEventArgs e) {
+    public static void OnError(object sender, ErrorEventArgs e) {
       EmitEvent ("error");
     }
 
-    private void OnClose(object sender, CloseEventArgs e) {
+    public static void OnClose(object sender, CloseEventArgs e) {
       EmitEvent ("close");
     }
 
-    private void EmitEvent(string type) {
+    public static void EmitEvent(string type) {
       EmitEvent (new SocketIOEvent (type));
     }
 
-    private void EmitEvent(SocketIOEvent ev) {
+    public static void EmitEvent(SocketIOEvent ev) {
       if(!handlers.ContainsKey (ev.name)) {
         return;
       }
-      foreach (Action<SocketIOEvent> handler in this.handlers[ev.name]) {
+      foreach (Action<SocketIOEvent> handler in handlers[ev.name]) {
         try {
           handler (ev);
         } catch (Exception ex) {
@@ -410,7 +417,7 @@ namespace SocketIO {
       }
     }
 
-    private void InvokeAck(Packet packet) {
+    public static void InvokeAck(Packet packet) {
       Ack ack;
       for (int i = 0; i < ackList.Count; i++) {
         if(ackList [i].packetId != packet.id) {

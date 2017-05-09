@@ -11,6 +11,9 @@ public class Simulator {
   public Simulator(string script) {
     luaenv = new Lua ();
     luaenv.LoadCLRPackage ();
+    luaenv.DoString (@"
+        import = function () end
+    ");
     luaenv.DoString (script);
   }
 
