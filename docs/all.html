@@ -173,6 +173,7 @@ function Update()
             <li onclick="setOption(0,2)">Orangutan</li>
           </ul>
         </section>
+<!--
         <section>
           <h2>Race Type</h2>
           <ul id="optiontype" class="optionsrow">
@@ -181,6 +182,7 @@ function Update()
             <li onclick="setOption(1,2)">Oblivion</li>
           </ul>
         </section>
+-->
         <section>
           <h2>Statistic</h2>
           <p>Which race statistic would you like to compare?</p>
@@ -514,7 +516,7 @@ function Update()
       });
       socket.on('lostUnity', () => {
         if (isRunning) receiveResults({
-          data: "Connection to Unity lost"
+          error: "Connection to Unity lost"
         });
         alert("lost unity oh no");
       });
